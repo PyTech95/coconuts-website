@@ -35,7 +35,7 @@ const Header = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-20">
             <a href="/#home" className="flex items-center gap-3">
-              <img src={BRAND.logo} alt={BRAND.name} className="w-[76px] h-[76px] sm:w-14 sm:h-14 object-contain" />
+              <img src={`${process.env.PUBLIC_URL}/mr-coconetto-logo.png`} alt={BRAND.name} className="w-[95px] h-[95px] sm:w-[70px] sm:h-[70px] object-contain" />
               <div className="leading-tight hidden sm:block whitespace-nowrap">
                 <div className="font-script text-pink-600 text-lg -mb-1">Simply Original</div>
                 <div className="font-display font-bold text-green-800 text-xl">Mr. Coconetto</div>
