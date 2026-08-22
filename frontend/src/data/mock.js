@@ -116,6 +116,31 @@ export const PRODUCTS = [
     ],
     note: 'Aapka Logo • Aapki Branding • Aapka Style',
   },
+  {
+    slug: 'banta-bottle',
+    icon: 'CupSoda',
+    name: 'Banta Bottle',
+    tagline: 'Mr Coconetto × Banta Bro',
+    image:
+      'https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/kf59jvom_WhatsApp%20Image%202026-08-22%20at%202.28.17%20PM.jpeg',
+    gallery: [
+      'https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/kf59jvom_WhatsApp%20Image%202026-08-22%20at%202.28.17%20PM.jpeg',
+      'https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/mceb0j5y_WhatsApp%20Image%202026-08-22%20at%202.28.34%20PM.jpeg',
+      'https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/d8sokw25_WhatsApp%20Image%202026-08-22%20at%202.28.33%20PM.jpeg',
+      'https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/4hyf6i88_WhatsApp%20Image%202026-08-22%20at%202.28.17%20PM%20%281%29.jpeg',
+    ],
+    description:
+      'Nostalgic desi banta soda in fizzy fun flavours 🥤 Taste the magic — ab chale bachpan mein!',
+    features: [
+      'Masala Fizz — Tangy & Fiery',
+      'Kala Khatta Crush — Sweet, Sour & Satisfying',
+      'Blueberry Blast — Tangy & Refreshing',
+      'Lemonade — Classic & Zesty',
+      'Perfect for events, parties, weddings & stalls',
+      'Bulk Orders Available',
+    ],
+    note: 'Taste The Magic! Ab Chale Bachpan Mein 🥤',
+  },
 ];
 
 export const NAV_LINKS = [
@@ -147,7 +172,7 @@ export const CUSTOMIZER = {
   subtitle:
     'Type what you want printed, add your event, and see it come alive on the coconut — then submit your order.',
   image:
-    'https://static.prod-images.emergentagent.com/jobs/ccfebade-5dff-4d8b-b926-caf888909b4d/images/3b56d4f92cb7a4ba2b280af8a622da237be8bcc53ab788f3419c9be9517f4013.jpeg',
+    'https://customer-assets-rejwkqb3.emergentagent.net/job_coconuts-ship/artifacts/7wrllrc3_image.png',
   maxChars: 60,
   engraveNote:
     'Type names, initials or a #hashtag to see it live. Logos & photos are hand-engraved by our team after you order — just mention them on WhatsApp.',

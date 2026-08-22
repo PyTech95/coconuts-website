@@ -19,9 +19,9 @@ const Customizer = () => {
   const [logoUrl, setLogoUrl] = useState('');
   const [logoPath, setLogoPath] = useState('');
   const [logoUploading, setLogoUploading] = useState(false);
-  const [logoPos, setLogoPos] = useState({ x: 50, y: 60 });
+  const [logoPos, setLogoPos] = useState({ x: 50, y: 64 });
   const [logoScale, setLogoScale] = useState(0.62);
-  const [textPos, setTextPos] = useState({ x: 50, y: 32 });
+  const [textPos, setTextPos] = useState({ x: 50, y: 44 });
   const [textScale, setTextScale] = useState(1);
   const previewRef = useRef(null);
   const draggingRef = useRef(null); // 'logo' | 'text' | null
@@ -58,7 +58,7 @@ const Customizer = () => {
     setLogoPreview('');
     setLogoUrl('');
     setLogoPath('');
-    setLogoPos({ x: 50, y: 60 });
+    setLogoPos({ x: 50, y: 64 });
     setLogoScale(0.62);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
@@ -156,7 +156,7 @@ const Customizer = () => {
 
         <div className="grid lg:grid-cols-2 gap-8 items-stretch">
           {/* Live preview */}
-          <div data-testid="coconut-preview" className="relative rounded-3xl overflow-hidden bg-gradient-to-b from-stone-100 to-white shadow-2xl min-h-[380px] md:min-h-[520px]">
+          <div data-testid="coconut-preview" className="relative rounded-3xl overflow-hidden bg-black shadow-2xl min-h-[380px] md:min-h-[520px]">
             <span className="absolute top-4 left-4 z-10 inline-flex items-center gap-1.5 bg-white/95 text-pink-600 text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full">
               <Sparkles className="w-3.5 h-3.5" /> Live Preview
             </span>

@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Check, MessageCircle, Nut, Utensils, FlaskConical, Stamp } from 'lucide-react';
+import { Check, MessageCircle, Nut, Utensils, FlaskConical, Stamp, CupSoda } from 'lucide-react';
 import { Button } from './ui/button';
 import Header from './Header';
 import Footer from './Footer';
 import FloatingButtons from './FloatingButtons';
 import { PRODUCTS, waLink } from '../data/mock';
 
-const iconMap = { Nut, Utensils, FlaskConical, Stamp };
+const iconMap = { Nut, Utensils, FlaskConical, Stamp, CupSoda };
 
 const Products = () => {
   useEffect(() => { window.scrollTo(0, 0); }, []);
