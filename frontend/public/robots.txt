@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://coconuts-ship.preview.emergentagent.com/sitemap.xml

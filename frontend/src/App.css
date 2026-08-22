@@ -1,0 +1,92 @@
+/* App-level styling */
+.App {
+  min-height: 100vh;
+  background: #ffffff;
+}
+
+/* Marquee animation */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 35s linear infinite;
+}
+.animate-marquee-fast {
+  animation: marquee 22s linear infinite;
+}
+
+/* Float animation */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Gentle pulse */
+@keyframes softPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.4); }
+  50% { box-shadow: 0 0 0 12px rgba(236, 72, 153, 0); }
+}
+.animate-soft-pulse {
+  animation: softPulse 2s infinite;
+}
+
+/* Fade in up */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up {
+  animation: fadeUp 0.6s ease-out both;
+}
+
+/* Custom scrollbar for horizontal scroll */
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Section fonts */
+.font-display {
+  font-family: 'Playfair Display', 'Georgia', serif;
+}
+.font-script {
+  font-family: 'Dancing Script', cursive;
+}
+
+/* Coconut hover card */
+.coco-card {
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+.coco-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px -12px rgba(76, 175, 80, 0.25);
+}
+
+/* Underline gradient */
+.text-gradient-pink-green {
+  background: linear-gradient(90deg, #EC4899 0%, #4CAF50 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Section spacing helper */
+.section-pad {
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+}
+@media (min-width: 768px) {
+  .section-pad {
+    padding-top: 6rem;
+    padding-bottom: 6rem;
+  }
+}
+
+/* Ensure link focus styles */
+a:focus-visible, button:focus-visible {
+  outline: 2px solid #EC4899;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
