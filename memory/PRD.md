@@ -88,3 +88,6 @@ Hero → Customizer → About Us (+ founder) → EventTypes → Stats → Video 
 ## 2026-06 session (banta product + coconut image revert)
 - Reverted Customizer CUSTOMIZER.image back to the original real shaved coconut (7wrllrc3, black bg) — the AI-generated blank coconut looked like a wooden log; user asked for the original. Restored preview bg to bg-black and re-tuned default text/logo positions (text y44, logo y64). Draggable+resizable text feature retained.
 - Added new product **Banta Bottle** (Mr Coconetto × Banta Bro soft drinks) with gallery: Flavor Fiesta combined poster (main) + Masala Fizz + Kala Khatta + Blue Barry. Uses lucide 'CupSoda' icon (registered in Products.jsx + ProductDetail.jsx iconMap). Flavours listed in features + tagline note. Verified via screenshots (products grid + /products/banta-bottle detail with 4 thumbs).
+
+## 2026-06 session (text small/big buttons)
+- Customizer preview-controls now have explicit − / + buttons for TEXT (text-size-minus/plus, clamp 0.5–1.9) and LOGO (logo-size-minus/plus, clamp 0.3–1.2) alongside the sliders, so users can size text/logo precisely on the coconut. Verified testing_agent iteration_9 (frontend 100%): text font 25.6px↔74px, logo width 93px↔287px, sliders in sync, all regressions (typing, drag, order, coconut image) pass.

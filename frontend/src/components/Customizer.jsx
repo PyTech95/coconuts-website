@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
-import { Type, Sparkles, Phone, CheckCircle2, MessageCircle, Upload, X, Image as ImageIcon } from 'lucide-react';
+import { Type, Sparkles, Phone, CheckCircle2, MessageCircle, Upload, X, Image as ImageIcon, Minus, Plus } from 'lucide-react';
 import { Button } from './ui/button';
 import { useToast } from '../hooks/use-toast';
 import { CUSTOMIZER, waLink } from '../data/mock';
@@ -225,10 +225,19 @@ const Customizer = () => {
                 )}
               </div>
 
-              {/* Controls: resize text (and logo when present) */}
-              <div data-testid="preview-controls" className="absolute bottom-3 left-1/2 -translate-x-1/2 z-30 flex flex-col gap-1.5 bg-white/95 rounded-2xl px-3 py-2 shadow-lg">
+              {/* Controls: make text (and logo) small / big + drag to reposition */}
+              <div data-testid="preview-controls" className="absolute bottom-3 left-1/2 -translate-x-1/2 z-30 flex flex-col gap-2 bg-white/95 rounded-2xl px-3 py-2.5 shadow-lg">
                 <div className="flex items-center gap-2">
-                  <span className="text-[11px] font-medium text-gray-500 w-[52px] shrink-0">Text size</span>
+                  <span className="text-[11px] font-semibold text-gray-600 w-[46px] shrink-0">Text</span>
+                  <button
+                    type="button"
+                    aria-label="Make text smaller"
+                    data-testid="text-size-minus"
+                    onClick={() => setTextScale((s) => Math.max(0.5, +(s - 0.15).toFixed(2)))}
+                    className="w-7 h-7 rounded-full bg-gray-100 hover:bg-pink-100 text-gray-700 flex items-center justify-center active:scale-95 transition"
+                  >
+                    <Minus className="w-4 h-4" />
+                  </button>
                   <input
                     type="range"
                     min="0.5"
@@ -237,12 +246,30 @@ const Customizer = () => {
                     value={textScale}
                     onChange={(e) => setTextScale(parseFloat(e.target.value))}
                     data-testid="text-resize-slider"
-                    className="w-28 accent-pink-600"
+                    className="w-24 accent-pink-600"
                   />
+                  <button
+                    type="button"
+                    aria-label="Make text bigger"
+                    data-testid="text-size-plus"
+                    onClick={() => setTextScale((s) => Math.min(1.9, +(s + 0.15).toFixed(2)))}
+                    className="w-7 h-7 rounded-full bg-gray-100 hover:bg-pink-100 text-gray-700 flex items-center justify-center active:scale-95 transition"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
                 </div>
                 {logoPreview && (
                   <div className="flex items-center gap-2">
-                    <span className="text-[11px] font-medium text-gray-500 w-[52px] shrink-0">Logo size</span>
+                    <span className="text-[11px] font-semibold text-gray-600 w-[46px] shrink-0">Logo</span>
+                    <button
+                      type="button"
+                      aria-label="Make logo smaller"
+                      data-testid="logo-size-minus"
+                      onClick={() => setLogoScale((s) => Math.max(0.3, +(s - 0.1).toFixed(2)))}
+                      className="w-7 h-7 rounded-full bg-gray-100 hover:bg-pink-100 text-gray-700 flex items-center justify-center active:scale-95 transition"
+                    >
+                      <Minus className="w-4 h-4" />
+                    </button>
                     <input
                       type="range"
                       min="0.3"
@@ -251,8 +278,17 @@ const Customizer = () => {
                       value={logoScale}
                       onChange={(e) => setLogoScale(parseFloat(e.target.value))}
                       data-testid="logo-resize-slider"
-                      className="w-28 accent-pink-600"
+                      className="w-24 accent-pink-600"
                     />
+                    <button
+                      type="button"
+                      aria-label="Make logo bigger"
+                      data-testid="logo-size-plus"
+                      onClick={() => setLogoScale((s) => Math.min(1.2, +(s + 0.1).toFixed(2)))}
+                      className="w-7 h-7 rounded-full bg-gray-100 hover:bg-pink-100 text-gray-700 flex items-center justify-center active:scale-95 transition"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </button>
                   </div>
                 )}
                 <span className="text-[10px] text-gray-400 text-center">Drag text or logo to reposition</span>
