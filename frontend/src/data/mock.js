@@ -41,9 +41,10 @@ export const PRODUCTS = [
   {
     slug: 'coconut-stirrer',
     icon: 'Utensils',
-    name: 'Coconut Stirrer',
+    name: 'Customised Stirrer',
     tagline: 'Sip in style',
-    image: null,
+    image:
+      'https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/k4959rny_image.png',
     description:
       'Elegant custom stirrers that pair with every personalized coconut — a premium finishing touch for your welcome drink.',
     features: ['Branded / themed stirrers', 'Food-safe & reusable options', 'Custom colours available'],
@@ -51,9 +52,10 @@ export const PRODUCTS = [
   {
     slug: 'hip-flask',
     icon: 'FlaskConical',
-    name: 'Hip Flask',
+    name: 'Customised Hip Flask',
     tagline: 'Keepsake gifting',
-    image: null,
+    image:
+      'https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/cl9frbav_image.png',
     description:
       'Personalized hip flasks — a stylish gift or wedding favour, engraved with names, dates or your monogram.',
     features: ['Custom engraving', 'Great as return gifts', 'Premium packaging'],
@@ -61,9 +63,10 @@ export const PRODUCTS = [
   {
     slug: 'stamp',
     icon: 'Stamp',
-    name: 'Custom Stamp',
+    name: 'Customised Stamp',
     tagline: 'Your mark, everywhere',
-    image: null,
+    image:
+      'https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/h9l8rcqf_image.png',
     description:
       'Bespoke stamps for your monogram, logo or wedding hashtag — used to brand coconuts, tags and favours consistently.',
     features: ['Monogram / logo / hashtag', 'Crisp, repeatable branding', 'Made to your artwork'],
@@ -99,7 +102,7 @@ export const CUSTOMIZER = {
   subtitle:
     'Type what you want printed, add your event, and see it come alive on the coconut — then submit your order.',
   image:
-    'https://customer-assets-rejwkqb3.emergentagent.net/job_coconuts-ship/artifacts/7wrllrc3_image.png',
+    'https://static.prod-images.emergentagent.com/jobs/ccfebade-5dff-4d8b-b926-caf888909b4d/images/3b56d4f92cb7a4ba2b280af8a622da237be8bcc53ab788f3419c9be9517f4013.jpeg',
   maxChars: 60,
   engraveNote:
     'Type names, initials or a #hashtag to see it live. Logos & photos are hand-engraved by our team after you order — just mention them on WhatsApp.',

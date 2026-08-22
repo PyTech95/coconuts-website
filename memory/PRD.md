@@ -68,3 +68,10 @@ Hero → Customizer → About Us (+ founder) → EventTypes → Stats → Video 
 - Verified running: `/api/health` = ok/db up; POST `/api/enquiries`, `/api/orders`, `/api/auth/login` all pass via curl; homepage renders full site. Removed a stray default `admin@example.com` user seeded before env loaded, and cleaned test data.
 - deployment_agent: **PASS** (no blockers). App is deployment-ready; user to click the platform **Deploy** button to go live.
 - Post-deploy TODO (P2): set `CORS_ORIGINS` to the live domain (drop `*`); optionally add `RESEND_API_KEY` to activate email alerts.
+
+## 2026-06 session (deploy import + engraving + products)
+- Reported "typing bug" on Customizer: verified NOT reproducible by testing_agent (iteration_6, frontend 100%) — real keystrokes land, field keeps focus, live preview updates, no scroll jump on desktop+mobile. Root cause of the earlier "0/60" was a screenshot-tool artifact.
+- **Customizer engraving revamp**: replaced preview base with a realistic blank shaved "lantern-shape" coconut (matches the real engraved product the client shared); print text now renders as a warm burnt-brown engraving (mixBlendMode multiply); uploaded photo/logo renders with a sepia "burnt engraving" filter, draggable + resizable. Preview bg changed black→cream.
+- **Header logo**: swapped to a transparent-background version of the brand logo (white disc removed) at +25% size (`/public/mr-coconetto-logo.png`).
+- **Products page**: added real photos + renamed to "Customised Stirrer" (gold stirrers), "Customised Hip Flask" (rainbow PalDev flask), "Customised Stamp" (branding stamp). Images are the client's uploaded product photos. Verified all 4 cards render via screenshot.
+- Deployment: app runs in /app, deployment_agent PASS earlier. Custom-domain steps (Entri) provided to user. Admin password rotation still pending user's chosen password.

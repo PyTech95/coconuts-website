@@ -19,8 +19,8 @@ const Customizer = () => {
   const [logoUrl, setLogoUrl] = useState('');
   const [logoPath, setLogoPath] = useState('');
   const [logoUploading, setLogoUploading] = useState(false);
-  const [logoPos, setLogoPos] = useState({ x: 50, y: 40 });
-  const [logoScale, setLogoScale] = useState(0.55);
+  const [logoPos, setLogoPos] = useState({ x: 50, y: 58 });
+  const [logoScale, setLogoScale] = useState(0.62);
   const previewRef = useRef(null);
   const draggingRef = useRef(false);
 
@@ -54,8 +54,8 @@ const Customizer = () => {
     setLogoPreview('');
     setLogoUrl('');
     setLogoPath('');
-    setLogoPos({ x: 50, y: 40 });
-    setLogoScale(0.55);
+    setLogoPos({ x: 50, y: 58 });
+    setLogoScale(0.62);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
@@ -152,7 +152,7 @@ const Customizer = () => {
 
         <div className="grid lg:grid-cols-2 gap-8 items-stretch">
           {/* Live preview */}
-          <div data-testid="coconut-preview" className="relative rounded-3xl overflow-hidden bg-black shadow-2xl min-h-[380px] md:min-h-[520px]">
+          <div data-testid="coconut-preview" className="relative rounded-3xl overflow-hidden bg-gradient-to-b from-stone-100 to-white shadow-2xl min-h-[380px] md:min-h-[520px]">
             <span className="absolute top-4 left-4 z-10 inline-flex items-center gap-1.5 bg-white/95 text-pink-600 text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full">
               <Sparkles className="w-3.5 h-3.5" /> Live Preview
             </span>
@@ -163,7 +163,7 @@ const Customizer = () => {
                 className="absolute inset-0 w-full h-full object-contain"
                 draggable={false}
               />
-              {/* Draggable + resizable logo (rendered black & white as it will be engraved) */}
+              {/* Draggable + resizable photo/logo — rendered as a warm sepia engraving burnt into the coconut */}
               {logoPreview && (
                 <img
                   src={logoPreview}
@@ -171,14 +171,15 @@ const Customizer = () => {
                   data-testid="preview-logo"
                   onPointerDown={startLogoDrag}
                   onTouchStart={startLogoDrag}
-                  className="absolute z-20 object-contain cursor-move select-none touch-none drop-shadow"
+                  className="absolute z-20 object-contain cursor-move select-none touch-none"
                   style={{
                     left: `${logoPos.x}%`,
                     top: `${logoPos.y}%`,
                     width: `${logoScale * 52}%`,
                     transform: 'translate(-50%, -50%)',
-                    filter: 'grayscale(1) contrast(1.2) brightness(0.96)',
+                    filter: 'sepia(1) saturate(2.4) hue-rotate(-18deg) brightness(0.72) contrast(1.3)',
                     mixBlendMode: 'multiply',
+                    opacity: 0.92,
                   }}
                   draggable={false}
                 />
@@ -198,18 +199,18 @@ const Customizer = () => {
                   />
                 </div>
               )}
-              {/* Engraved overlay anchored on the coconut's white body */}
+              {/* Engraved text overlay — warm burnt tone anchored on the coconut's body */}
               <div
-                className="absolute flex flex-col items-center justify-center text-center pointer-events-none px-2 overflow-hidden"
-                style={{ top: '42%', left: '22%', right: '22%', bottom: '16%' }}
+                className="absolute flex flex-col items-center text-center pointer-events-none px-2 overflow-hidden"
+                style={{ top: '30%', left: '20%', right: '20%', mixBlendMode: 'multiply' }}
               >
                 <div
                   data-testid="preview-print-text"
                   className="font-script leading-tight break-words w-full whitespace-pre-line"
                   style={{
-                    color: '#4a2f16',
-                    fontSize: 'clamp(2rem, 6.2vw, 4rem)',
-                    textShadow: '0 1px 2px rgba(255,255,255,0.4)',
+                    color: '#4a2c10',
+                    fontSize: 'clamp(1.7rem, 5.4vw, 3.4rem)',
+                    textShadow: '0 1px 0 rgba(120,80,40,0.25)',
                   }}
                 >
                   {printText || (logoPreview ? '' : 'Your Text')}
@@ -218,7 +219,7 @@ const Customizer = () => {
                   <div
                     data-testid="preview-event-name"
                     className="mt-1.5 font-display font-semibold break-words w-full"
-                    style={{ color: '#5b3f24', fontSize: 'clamp(0.8rem, 2vw, 1.2rem)' }}
+                    style={{ color: '#5b3f24', fontSize: 'clamp(0.75rem, 1.9vw, 1.1rem)' }}
                   >
                     {eventName}
                   </div>
