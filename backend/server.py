@@ -217,6 +217,7 @@ class Order(BaseModel):
     mobile: str
     logo_url: str = ""
     logo_path: str = ""
+    status: str = "new"
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class OrderCreate(BaseModel):
@@ -382,6 +383,158 @@ async def serve_file(path: str):
     return Response(content=data, media_type=record.get("content_type") or content_type)
 
 
+# ---------------------------------------------------------------------------
+# CMS: editable site content + products (DB-backed, admin-managed)
+# ---------------------------------------------------------------------------
+class ContentUpdate(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+class ProductIn(BaseModel):
+    model_config = ConfigDict(extra="allow")
+    name: str = Field(..., min_length=1, max_length=160)
+
+class StatusUpdate(BaseModel):
+    status: str = Field(..., max_length=40)
+
+DEFAULT_CONTENT = {
+    "id": "site",
+    "brand": {"name": "Mr. Coconetto", "tagline": "Simply Original", "phone": "+91-8700331212", "email": "mrcoconetto@gmail.com"},
+    "hero": {
+        "badge": "Personalized Coconuts · Weddings, Events & Celebrations",
+        "titleLine1": "Personalized Coconuts for",
+        "titleAccent": "Weddings, Events",
+        "titleLine3": "& Celebrations",
+        "subheading": "Fresh. Personalized. Unforgettable.",
+        "description": "From personalized coconuts for weddings to customized coconuts for corporate events, we turn fresh tender coconuts into a premium welcome experience your guests remember. Carved names, stamped logos and bespoke designs — delivered chilled, pan-India.",
+        "brandLine": "Mr. Coconetto – Simply Original 🥥",
+        "primaryCta": "Get a Quote on WhatsApp",
+        "secondaryCta": "View Our Work",
+    },
+    "about": {
+        "label": "About Us",
+        "titleLine1": "We Don't Just",
+        "titleLine2": "Serve Coconuts.",
+        "script": "We Create Experiences.",
+        "intro": "Mr. Coconetto — Simply Original is a premium personalized coconut brand, redefining the way coconuts are presented at weddings, corporate events, celebrations and luxury occasions across India.",
+        "story": "What started with a simple belief — that a natural fruit could become a premium experience — has grown into a trusted name for customized coconut bars. We combine fresh A+ grade tender coconuts with precision custom engraving and professional service to make every occasion memorable.",
+        "mascot": "https://customer-assets-rejwkqb3.emergentagent.net/job_coconuts-ship/artifacts/5qzjsptm_image.png",
+        "product": "https://customer-assets-rejwkqb3.emergentagent.net/job_coconuts-ship/artifacts/c7k8zit9_image.png",
+    },
+    "seo": {
+        "title": "Mr. Coconetto — Personalized Coconuts for Weddings & Events",
+        "description": "Premium personalized & engraved tender coconuts for weddings, corporate events and celebrations. Names, logos & custom designs — delivered chilled, pan-India.",
+        "keywords": "personalized coconut, engraved coconut, wedding coconut bar, customized coconut, Mr Coconetto",
+    },
+}
+
+
+async def get_content_doc() -> dict:
+    doc = await db.site_content.find_one({"id": "site"}, {"_id": 0})
+    return doc or DEFAULT_CONTENT
+
+
+def _deep_merge(base: dict, patch: dict) -> dict:
+    out = dict(base)
+    for k, v in patch.items():
+        if isinstance(v, dict) and isinstance(out.get(k), dict):
+            out[k] = _deep_merge(out[k], v)
+        else:
+            out[k] = v
+    return out
+
+
+@api_router.get("/content")
+async def get_content():
+    return await get_content_doc()
+
+
+@api_router.put("/content")
+async def update_content(payload: ContentUpdate, admin: dict = Depends(get_current_admin)):
+    current = await get_content_doc()
+    merged = _deep_merge(current, payload.model_dump())
+    merged["id"] = "site"
+    merged.pop("_id", None)
+    await db.site_content.update_one({"id": "site"}, {"$set": merged}, upsert=True)
+    return merged
+
+
+@api_router.get("/products")
+async def list_products():
+    docs = await db.products.find({}, {"_id": 0}).sort("order", 1).to_list(200)
+    return docs
+
+
+@api_router.get("/products/{slug}")
+async def get_product(slug: str):
+    doc = await db.products.find_one({"slug": slug}, {"_id": 0})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return doc
+
+
+@api_router.post("/admin/products")
+async def create_product(payload: ProductIn, admin: dict = Depends(get_current_admin)):
+    data = payload.model_dump()
+    data["id"] = str(uuid.uuid4())
+    if not data.get("slug"):
+        data["slug"] = slugify_py(data["name"])
+    if await db.products.find_one({"slug": data["slug"]}):
+        data["slug"] = f'{data["slug"]}-{data["id"][:4]}'
+    last = await db.products.find_one({}, sort=[("order", -1)])
+    data["order"] = (last.get("order", 0) + 1) if last else 0
+    data.setdefault("icon", "Nut")
+    data.setdefault("features", [])
+    data.setdefault("gallery", [])
+    await db.products.insert_one(dict(data))
+    data.pop("_id", None)
+    return data
+
+
+@api_router.put("/admin/products/{pid}")
+async def update_product(pid: str, payload: ProductIn, admin: dict = Depends(get_current_admin)):
+    data = payload.model_dump()
+    data.pop("id", None)
+    data.pop("_id", None)
+    res = await db.products.update_one({"id": pid}, {"$set": data})
+    if res.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    doc = await db.products.find_one({"id": pid}, {"_id": 0})
+    return doc
+
+
+@api_router.delete("/admin/products/{pid}")
+async def delete_product(pid: str, admin: dict = Depends(get_current_admin)):
+    res = await db.products.delete_one({"id": pid})
+    if res.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return {"ok": True}
+
+
+@api_router.patch("/admin/orders/{oid}")
+async def update_order_status(oid: str, payload: StatusUpdate, admin: dict = Depends(get_current_admin)):
+    res = await db.orders.update_one({"id": oid}, {"$set": {"status": payload.status}})
+    if res.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Order not found")
+    return {"ok": True, "status": payload.status}
+
+
+@api_router.delete("/admin/orders/{oid}")
+async def delete_order(oid: str, admin: dict = Depends(get_current_admin)):
+    await db.orders.delete_one({"id": oid})
+    return {"ok": True}
+
+
+@api_router.delete("/admin/enquiries/{eid}")
+async def delete_enquiry(eid: str, admin: dict = Depends(get_current_admin)):
+    await db.enquiries.delete_one({"id": eid})
+    return {"ok": True}
+
+
+def slugify_py(s: str) -> str:
+    import re
+    return re.sub(r"(^-|-$)", "", re.sub(r"[^a-z0-9]+", "-", str(s).lower().strip()))
+
+
 # Include the router in the main app
 app.include_router(api_router)
 
@@ -442,3 +595,86 @@ async def startup_auth():
             logger.info("Updated admin password for %s", ADMIN_EMAIL)
     except Exception as exc:
         logger.error("Admin seeding failed: %s", exc)
+
+
+DEFAULT_PRODUCTS = [
+    {
+        "slug": "personalized-coconut", "icon": "Nut", "name": "Personalized Coconut", "tagline": "The signature",
+        "image": "https://customer-assets-rejwkqb3.emergentagent.net/job_coconuts-ship/artifacts/c7k8zit9_image.png",
+        "description": "Fresh A+ grade tender coconut, precision-engraved with names, hashtags, logos or monograms. The heart of every Mr. Coconetto setup.",
+        "features": ["Names, hashtag, logo or monogram", "A+ grade, delivered chilled", "Min. 100 coconuts"], "gallery": [],
+    },
+    {
+        "slug": "coconut-stirrer", "icon": "Utensils", "name": "Customised Stirrer", "tagline": "Your Brand, Your Style",
+        "image": "https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/k4959rny_image.png",
+        "gallery": [
+            "https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/k4959rny_image.png",
+            "https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/0pjfdain_WhatsApp%20Image%202026-08-22%20at%202.27.55%20PM.jpeg",
+            "https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/rda6kk7a_WhatsApp%20Image%202026-08-22%20at%202.28.15%20PM.jpeg",
+            "https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/dgyfu0u1_WhatsApp%20Image%202026-08-22%20at%202.28.36%20PM.jpeg",
+            "https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/4v6gxvai_WhatsApp%20Image%202026-08-22%20at%202.27.54%20PM.jpeg",
+        ],
+        "description": "Apne drinks ko dijiye ek premium branded experience ✨",
+        "features": ["Custom Logo & Branding", "Multiple Custom Designs", "Perfect for Cocktails, Mocktails & Beverages", "Ideal for Weddings, Events & Corporate Promotions", "Bulk Orders Available"],
+        "note": "Har Drink Mein Aapka Brand! 🥥",
+    },
+    {
+        "slug": "hip-flask", "icon": "FlaskConical", "name": "Customised Hip Flask", "tagline": "Premium Branding",
+        "image": "https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/cl9frbav_image.png",
+        "gallery": [
+            "https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/cl9frbav_image.png",
+            "https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/rl2gnq2p_WhatsApp%20Image%202026-08-22%20at%202.25.28%20PM.jpeg",
+            "https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/wcp0vzts_WhatsApp%20Image%202026-08-22%20at%202.25.31%20PM.jpeg",
+            "https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/7zkge6z2_WhatsApp%20Image%202026-08-22%20at%202.25.32%20PM.jpeg",
+            "https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/tj3pfqi3_WhatsApp%20Image%202026-08-22%20at%202.27.24%20PM.jpeg",
+        ],
+        "description": "Apne brand ko dijiye ek premium & memorable touch ✨",
+        "features": ["Custom Logo Engraving", "Name & Initials Customisation", "Premium Finish", "Perfect for Corporate Gifting", "Ideal for Events, Weddings & Promotions", "Bulk & Custom Orders Available"],
+        "note": "Your Brand. Your Style. Your Flask.",
+    },
+    {
+        "slug": "stamp", "icon": "Stamp", "name": "Customised Stamp", "tagline": "Make Your Brand Stand Out",
+        "image": "https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/h9l8rcqf_image.png",
+        "gallery": [
+            "https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/h9l8rcqf_image.png",
+            "https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/fxfy5wsy_WhatsApp%20Image%202026-08-22%20at%202.27.29%20PM.jpeg",
+            "https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/k7nxwyy3_WhatsApp%20Image%202026-08-22%20at%202.27.31%20PM.jpeg",
+            "https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/sv807sp8_WhatsApp%20Image%202026-08-22%20at%202.27.34%20PM.jpeg",
+            "https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/pkaqoi7c_WhatsApp%20Image%202026-08-22%20at%202.27.52%20PM.jpeg",
+            "https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/9z3mqf5u_WhatsApp%20Image%202026-08-22%20at%202.27.32%20PM.jpeg",
+        ],
+        "description": "Apne coconut aur beverages ko dijiye ek unique branded identity ✨",
+        "features": ["Custom Logo Stamp", "Brand Name & Hashtag", "Clean & Premium Impression", "Perfect for Fresh Coconut Branding", "Ideal for Events, Weddings & Brand Promotions", "Bulk Orders Available"],
+        "note": "Aapka Logo • Aapki Branding • Aapka Style",
+    },
+    {
+        "slug": "banta-bottle", "icon": "CupSoda", "name": "Banta Bottle", "tagline": "Mr Coconetto × Banta Bro",
+        "image": "https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/kf59jvom_WhatsApp%20Image%202026-08-22%20at%202.28.17%20PM.jpeg",
+        "gallery": [
+            "https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/kf59jvom_WhatsApp%20Image%202026-08-22%20at%202.28.17%20PM.jpeg",
+            "https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/mceb0j5y_WhatsApp%20Image%202026-08-22%20at%202.28.34%20PM.jpeg",
+            "https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/d8sokw25_WhatsApp%20Image%202026-08-22%20at%202.28.33%20PM.jpeg",
+            "https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/4hyf6i88_WhatsApp%20Image%202026-08-22%20at%202.28.17%20PM%20%281%29.jpeg",
+        ],
+        "description": "Nostalgic desi banta soda in fizzy fun flavours 🥤 Taste the magic — ab chale bachpan mein!",
+        "features": ["Masala Fizz — Tangy & Fiery", "Kala Khatta Crush — Sweet, Sour & Satisfying", "Blueberry Blast — Tangy & Refreshing", "Lemonade — Classic & Zesty", "Perfect for events, parties, weddings & stalls", "Bulk Orders Available"],
+        "note": "Taste The Magic! Ab Chale Bachpan Mein 🥤",
+    },
+]
+
+
+@app.on_event("startup")
+async def startup_cms_seed():
+    try:
+        if await db.site_content.find_one({"id": "site"}) is None:
+            await db.site_content.insert_one(dict(DEFAULT_CONTENT))
+            logger.info("Seeded site_content")
+        if await db.products.count_documents({}) == 0:
+            for i, p in enumerate(DEFAULT_PRODUCTS):
+                doc = dict(p)
+                doc["id"] = str(uuid.uuid4())
+                doc["order"] = i
+                await db.products.insert_one(doc)
+            logger.info("Seeded %d products", len(DEFAULT_PRODUCTS))
+    except Exception as exc:
+        logger.error("CMS seeding failed: %s", exc)

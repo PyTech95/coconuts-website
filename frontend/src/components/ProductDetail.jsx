@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import axios from 'axios';
 import { Check, MessageCircle, ArrowLeft, Nut, Utensils, FlaskConical, Stamp, CupSoda } from 'lucide-react';
 import { Button } from './ui/button';
 import Header from './Header';
@@ -11,13 +12,23 @@ const iconMap = { Nut, Utensils, FlaskConical, Stamp, CupSoda };
 
 const ProductDetail = () => {
   const { slug } = useParams();
-  const product = PRODUCTS.find((p) => p.slug === slug);
+  const [product, setProduct] = useState(() => PRODUCTS.find((p) => p.slug === slug) || null);
+  const [loaded, setLoaded] = useState(false);
   const gallery = product ? (product.gallery && product.gallery.length ? product.gallery : (product.image ? [product.image] : [])) : [];
   const [active, setActive] = useState(0);
 
-  useEffect(() => { window.scrollTo(0, 0); setActive(0); }, [slug]);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    setActive(0);
+    setProduct(PRODUCTS.find((p) => p.slug === slug) || null);
+    setLoaded(false);
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/products/${slug}`)
+      .then((r) => setProduct(r.data))
+      .catch(() => {})
+      .finally(() => setLoaded(true));
+  }, [slug]);
 
-  if (!product) {
+  if (!product && loaded) {
     return (
       <div className="bg-white min-h-screen">
         <Header />
@@ -25,6 +36,16 @@ const ProductDetail = () => {
           <h1 className="font-display font-bold text-3xl text-gray-900">Product not found</h1>
           <Link to="/products" className="mt-4 inline-block text-pink-600 font-semibold">← Back to Products</Link>
         </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="bg-white min-h-screen">
+        <Header />
+        <main className="pt-32 pb-24 text-center px-6 text-gray-400" data-testid="product-loading">Loading…</main>
         <Footer />
       </div>
     );

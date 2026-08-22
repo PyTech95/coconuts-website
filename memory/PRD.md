@@ -91,3 +91,11 @@ Hero → Customizer → About Us (+ founder) → EventTypes → Stats → Video 
 
 ## 2026-06 session (text small/big buttons)
 - Customizer preview-controls now have explicit − / + buttons for TEXT (text-size-minus/plus, clamp 0.5–1.9) and LOGO (logo-size-minus/plus, clamp 0.3–1.2) alongside the sliders, so users can size text/logo precisely on the coconut. Verified testing_agent iteration_9 (frontend 100%): text font 25.6px↔74px, logo width 93px↔287px, sliders in sync, all regressions (typing, drag, order, coconut image) pass.
+
+## 2026-06 session (Admin CMS + inline live editor) — MAJOR
+- Made site content DB-backed. New collections: site_content (hero/about/brand/seo) + products. Public: GET /api/content, /api/products, /api/products/{slug}. Admin (JWT): PUT /api/content (deep-merge), POST/PUT/DELETE /api/admin/products, PATCH/DELETE /api/admin/orders, DELETE /api/admin/enquiries. Orders now have a status field. Startup seeds content + 5 products.
+- New Admin Dashboard (/admin, replaces AdminInbox) with tabs: Orders (status dropdown + delete), Enquiries (delete), Products (full CRUD + main image & gallery upload via object storage), Content (hero/about/brand text + image upload), SEO (meta title/description/keywords). View Site button.
+- Inline LIVE editor: floating AdminBar (visible only when logged in) with Edit Mode toggle. Hero + About texts (EditableText, contentEditable, save-on-blur) and About mascot image (EditableImage upload) editable directly on the page. Seo.jsx applies content.seo to document. Hero/About/Products/ProductDetail read from DB with mock.js fallback.
+- Context: src/context/SiteContent.js (content fetch, editMode, saveContent, uploadImage). Files: AdminDashboard.jsx, AdminBar.jsx, admin/Editable.jsx, Seo.jsx.
+- Verified testing_agent iteration_10: backend 13/13, frontend 100% — login, all tabs, orders status/delete, product CRUD reflecting on /products, content edits reflecting on homepage, SEO title, inline edit persistence, logout. Test data reverted.
+- Admin: admin@mrcoconetto.com / Coconetto@2026.

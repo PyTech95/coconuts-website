@@ -47,8 +47,8 @@ const AdminLogin = () => {
         <div className="rounded-3xl bg-white/[0.04] backdrop-blur border border-white/10 p-8 shadow-2xl">
           <div className="text-center">
             <span className="font-script text-pink-400 text-2xl">Mr. Coconetto</span>
-            <h1 className="font-display font-bold text-2xl text-white mt-1">Admin Inbox</h1>
-            <p className="text-white/50 text-sm mt-1">Sign in to view orders &amp; enquiries</p>
+            <h1 className="font-display font-bold text-2xl text-white mt-1">Admin Dashboard</h1>
+            <p className="text-white/50 text-sm mt-1">Sign in to manage your site</p>
           </div>
           <form onSubmit={submit} className="mt-7 space-y-4">
             <div className="relative">

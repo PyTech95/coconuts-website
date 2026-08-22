@@ -4,10 +4,14 @@ import {
   Star, MapPin, Smile, Users,
 } from 'lucide-react';
 import { ABOUT, ABOUT_STATS, FOUNDER } from '../data/mock';
+import { useSiteContent } from '../context/SiteContent';
+import { EditableText, EditableImage } from './admin/Editable';
 
 const iconMap = { Sparkles, Leaf, ShieldCheck, Gem, PencilRuler, Star, MapPin, Smile, Users };
 
 const AboutUs = () => {
+  const { content } = useSiteContent();
+  const about = { ...ABOUT, ...(content?.about || {}) };
   return (
     <section id="about" data-testid="about-section" className="bg-[#f6f4ee]">
       {/* Top: content + mascot */}
@@ -15,27 +19,27 @@ const AboutUs = () => {
         {/* Left content */}
         <div data-testid="about-content">
           <div className="flex items-center gap-3">
-            <span className="uppercase tracking-[0.25em] text-xs font-bold text-green-800">
-              {ABOUT.label}
-            </span>
+            <EditableText path="about.label" as="span" className="uppercase tracking-[0.25em] text-xs font-bold text-green-800">
+              {about.label}
+            </EditableText>
             <span className="h-px w-16 bg-green-800/40" />
           </div>
 
           <h2 className="mt-5 font-display font-extrabold text-4xl md:text-5xl lg:text-[3.25rem] leading-[1.05] text-gray-900">
-            {ABOUT.titleLine1}
+            <EditableText path="about.titleLine1" as="span">{about.titleLine1}</EditableText>
             <br />
-            {ABOUT.titleLine2}
+            <EditableText path="about.titleLine2" as="span">{about.titleLine2}</EditableText>
           </h2>
-          <p className="font-script text-green-700 text-4xl md:text-5xl mt-2 inline-block border-b-2 border-green-600/60 pb-1">
-            {ABOUT.script}
-          </p>
+          <EditableText path="about.script" as="p" className="font-script text-green-700 text-4xl md:text-5xl mt-2 inline-block border-b-2 border-green-600/60 pb-1">
+            {about.script}
+          </EditableText>
 
-          <p className="mt-6 text-gray-600 leading-relaxed max-w-xl font-semibold">
-            {ABOUT.intro}
-          </p>
-          <p className="mt-3 text-gray-600 leading-relaxed max-w-xl">
-            {ABOUT.story}
-          </p>
+          <EditableText path="about.intro" as="p" multiline className="mt-6 text-gray-600 leading-relaxed max-w-xl font-semibold">
+            {about.intro}
+          </EditableText>
+          <EditableText path="about.story" as="p" multiline className="mt-3 text-gray-600 leading-relaxed max-w-xl">
+            {about.story}
+          </EditableText>
 
           <div className="mt-8 space-y-6">
             {ABOUT.points.map((p) => {
@@ -77,16 +81,18 @@ const AboutUs = () => {
         {/* Right mascot */}
         <div data-testid="about-mascot" className="relative">
           <div className="relative rounded-[2rem] overflow-hidden bg-gradient-to-b from-sky-100 via-emerald-50 to-green-100 shadow-xl ring-1 ring-green-900/5">
-            <img
-              src={ABOUT.mascot}
+            <EditableImage
+              path="about.mascot"
+              src={about.mascot}
               alt="Mr. Coconetto mascot"
-              className="w-full h-full object-contain"
+              className="w-full h-full"
+              imgClassName="w-full h-full object-contain"
               loading="lazy"
             />
           </div>
           {/* Real engraved-coconut accent */}
           <img
-            src={ABOUT.product}
+            src={about.product}
             alt="Personalised Mr. Coconetto coconut"
             className="hidden sm:block absolute -bottom-6 -left-6 w-28 md:w-36 rounded-2xl bg-white shadow-2xl ring-4 ring-white rotate-[-6deg]"
             loading="lazy"

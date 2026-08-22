@@ -30,12 +30,16 @@ import CityDetail from './components/CityDetail';
 import ServiceStory from './components/ServiceStory';
 import InstagramFeed from './components/InstagramFeed';
 import AdminLogin from './components/AdminLogin';
-import AdminInbox from './components/AdminInbox';
+import AdminDashboard from './components/AdminDashboard';
+import AdminBar from './components/AdminBar';
+import Seo from './components/Seo';
+import { SiteContentProvider } from './context/SiteContent';
 import { Toaster } from './components/ui/toaster';
 
 const HomePage = () => {
   return (
     <div className="bg-white">
+      <Seo />
       <Header />
       <main>
         <Hero />
@@ -65,22 +69,25 @@ const HomePage = () => {
 function App() {
   return (
     <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/customize" element={<CustomizePage />} />
-          <Route path="/products" element={<Products />} />
-          <Route path="/products/:slug" element={<ProductDetail />} />
-          <Route path="/cities" element={<CitiesPage />} />
-          <Route path="/cities/:city" element={<CityDetail />} />
-          <Route path="/services/:slug" element={<ServiceStory />} />
-          <Route path="/blog" element={<Blog />} />
-          <Route path="/blog/:slug" element={<BlogPost />} />
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin" element={<AdminInbox />} />
-        </Routes>
-      </BrowserRouter>
-      <Toaster />
+      <SiteContentProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/customize" element={<CustomizePage />} />
+            <Route path="/products" element={<Products />} />
+            <Route path="/products/:slug" element={<ProductDetail />} />
+            <Route path="/cities" element={<CitiesPage />} />
+            <Route path="/cities/:city" element={<CityDetail />} />
+            <Route path="/services/:slug" element={<ServiceStory />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+          </Routes>
+          <AdminBar />
+        </BrowserRouter>
+        <Toaster />
+      </SiteContentProvider>
     </div>
   );
 }

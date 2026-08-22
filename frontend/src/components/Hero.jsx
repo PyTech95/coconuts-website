@@ -2,10 +2,14 @@ import React from 'react';
 import { Phone, CheckCircle2, Cpu, MapPin, Star, MessageCircle } from 'lucide-react';
 import { Button } from './ui/button';
 import { BRAND, HERO, HERO_FEATURES, MARQUEE_ITEMS, EVENT_TYPES, waLink } from '../data/mock';
+import { useSiteContent } from '../context/SiteContent';
+import { EditableText } from './admin/Editable';
 
 const iconMap = { Check: CheckCircle2, Cpu, MapPin, Star };
 
 const Hero = () => {
+  const { content } = useSiteContent();
+  const hero = { ...HERO, ...(content?.hero || {}) };
   return (
     <section id="home" className="relative pt-28 md:pt-32 pb-14 md:pb-20 overflow-hidden bg-gradient-to-b from-pink-50 via-white to-green-50">
       {/* Decorative blobs */}
@@ -31,31 +35,31 @@ const Hero = () => {
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
           {/* Left: Text */}
           <div className="animate-fade-up order-2 lg:order-1">
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-pink-200 text-pink-700 text-xs font-semibold shadow-sm">
-              {HERO.badge}
-            </span>
+            <EditableText path="hero.badge" as="span" className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-pink-200 text-pink-700 text-xs font-semibold shadow-sm">
+              {hero.badge}
+            </EditableText>
             <h1 className="mt-5 font-display font-extrabold text-[1.7rem] leading-[1.18] sm:text-4xl sm:leading-[1.1] md:text-5xl lg:text-[3.2rem] lg:leading-[1.08] text-gray-900">
-              Personalized Coconuts for
+              <EditableText path="hero.titleLine1" as="span">{hero.titleLine1}</EditableText>
               <br />
-              <span className="text-gradient-pink-green">Weddings, Events</span>
+              <EditableText path="hero.titleAccent" as="span" className="text-gradient-pink-green">{hero.titleAccent}</EditableText>
               <br />
-              <span className="text-green-700">& Celebrations</span>
+              <EditableText path="hero.titleLine3" as="span" className="text-green-700">{hero.titleLine3}</EditableText>
             </h1>
-            <p className="mt-4 text-lg font-script text-pink-600">{HERO.subheading}</p>
-            <p className="mt-4 text-gray-600 max-w-xl leading-relaxed">
-              {HERO.description}
-            </p>
-            <p className="mt-4 font-display font-bold text-green-800">{HERO.brandLine}</p>
+            <EditableText path="hero.subheading" as="p" className="mt-4 text-lg font-script text-pink-600">{hero.subheading}</EditableText>
+            <EditableText path="hero.description" as="p" multiline className="mt-4 text-gray-600 max-w-xl leading-relaxed">
+              {hero.description}
+            </EditableText>
+            <EditableText path="hero.brandLine" as="p" className="mt-4 font-display font-bold text-green-800">{hero.brandLine}</EditableText>
 
             <div className="mt-7 flex flex-wrap gap-3">
-              <a href={waLink(HERO.whatsappMsg)} target="_blank" rel="noreferrer" data-testid="hero-whatsapp-btn">
+              <a href={waLink(hero.whatsappMsg)} target="_blank" rel="noreferrer" data-testid="hero-whatsapp-btn">
                 <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white rounded-full px-7 shadow-lg">
-                  <MessageCircle className="w-4 h-4 mr-2" /> {HERO.primaryCta}
+                  <MessageCircle className="w-4 h-4 mr-2" /> {hero.primaryCta}
                 </Button>
               </a>
               <a href="#services" data-testid="hero-work-btn">
                 <Button size="lg" variant="outline" className="rounded-full px-7 border-pink-400 text-pink-700 hover:bg-pink-50">
-                  {HERO.secondaryCta}
+                  {hero.secondaryCta}
                 </Button>
               </a>
             </div>

@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import { Check, MessageCircle, Nut, Utensils, FlaskConical, Stamp, CupSoda } from 'lucide-react';
 import { Button } from './ui/button';
 import Header from './Header';
@@ -10,7 +11,13 @@ import { PRODUCTS, waLink } from '../data/mock';
 const iconMap = { Nut, Utensils, FlaskConical, Stamp, CupSoda };
 
 const Products = () => {
-  useEffect(() => { window.scrollTo(0, 0); }, []);
+  const [products, setProducts] = useState(PRODUCTS);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/products`)
+      .then((r) => { if (Array.isArray(r.data) && r.data.length) setProducts(r.data); })
+      .catch(() => {});
+  }, []);
 
   return (
     <div className="bg-white">
@@ -29,7 +36,7 @@ const Products = () => {
             </div>
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {PRODUCTS.map((p) => {
+              {products.map((p) => {
                 const Icon = iconMap[p.icon] || Nut;
                 return (
                   <article
