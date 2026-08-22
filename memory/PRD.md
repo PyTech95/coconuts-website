@@ -79,3 +79,8 @@ Hero → Customizer → About Us (+ founder) → EventTypes → Stats → Video 
 ## 2026-06 session (movable text + product copy)
 - **Customizer**: engraved TEXT is now draggable (reposition up/down/side via preview-text-block) AND resizable (text-resize-slider), mirroring the logo. Users can place text above/below the logo. Verified by testing_agent iteration_7 (100%): drag 50%/32%->75%/80%, size 30px<->92px, order flow POST /api/orders OK (MC-CE41A4).
 - **Products page**: Hip Flask / Stirrer / Stamp updated with client's Hinglish marketing copy (headline + 🔹 feature bullets + script tagline note): 'Har Drink Mein Aapka Brand!', 'Your Brand. Your Style. Your Flask.', 'Aapka Logo • Aapki Branding • Aapka Style'. Real product photos wired in. All verified.
+
+## 2026-06 session (product detail pages + galleries)
+- New **Product Detail page** at /products/:slug (ProductDetail.jsx) with a main image + clickable thumbnail gallery, features, note, WhatsApp enquiry + "Customize Yours" + Back links. Product cards on /products are now clickable (image, title, "View details & gallery" link).
+- Galleries added (client's real photos): Hip Flask (5 imgs: PalDev, RoopKaMann, A|D, Keshav&Chetna + main), Stirrer (5: fan, WISHFUL WEDDINGS, #JADE cloud tags, brass dies + main; skipped an Etsy screenshot that had another site's branding/phone chrome), Stamp (6: hot-stamp handles, Fred's Burgers, BURGER HOUSE, SAINS iron, MS/KJ buns + main).
+- Verified by testing_agent iteration_8 (frontend 100%, 24/24): card navigation, thumb switching, main-image swap, WhatsApp/back/customize links, and 'product not found' fallback.

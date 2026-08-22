@@ -45,6 +45,13 @@ export const PRODUCTS = [
     tagline: 'Your Brand, Your Style',
     image:
       'https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/k4959rny_image.png',
+    gallery: [
+      'https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/k4959rny_image.png',
+      'https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/0pjfdain_WhatsApp%20Image%202026-08-22%20at%202.27.55%20PM.jpeg',
+      'https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/rda6kk7a_WhatsApp%20Image%202026-08-22%20at%202.28.15%20PM.jpeg',
+      'https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/dgyfu0u1_WhatsApp%20Image%202026-08-22%20at%202.28.36%20PM.jpeg',
+      'https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/4v6gxvai_WhatsApp%20Image%202026-08-22%20at%202.27.54%20PM.jpeg',
+    ],
     description:
       'Apne drinks ko dijiye ek premium branded experience ✨',
     features: [
@@ -63,6 +70,13 @@ export const PRODUCTS = [
     tagline: 'Premium Branding',
     image:
       'https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/cl9frbav_image.png',
+    gallery: [
+      'https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/cl9frbav_image.png',
+      'https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/rl2gnq2p_WhatsApp%20Image%202026-08-22%20at%202.25.28%20PM.jpeg',
+      'https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/wcp0vzts_WhatsApp%20Image%202026-08-22%20at%202.25.31%20PM.jpeg',
+      'https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/7zkge6z2_WhatsApp%20Image%202026-08-22%20at%202.25.32%20PM.jpeg',
+      'https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/tj3pfqi3_WhatsApp%20Image%202026-08-22%20at%202.27.24%20PM.jpeg',
+    ],
     description:
       'Apne brand ko dijiye ek premium & memorable touch ✨',
     features: [
@@ -82,6 +96,14 @@ export const PRODUCTS = [
     tagline: 'Make Your Brand Stand Out',
     image:
       'https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/h9l8rcqf_image.png',
+    gallery: [
+      'https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/h9l8rcqf_image.png',
+      'https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/fxfy5wsy_WhatsApp%20Image%202026-08-22%20at%202.27.29%20PM.jpeg',
+      'https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/k7nxwyy3_WhatsApp%20Image%202026-08-22%20at%202.27.31%20PM.jpeg',
+      'https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/sv807sp8_WhatsApp%20Image%202026-08-22%20at%202.27.34%20PM.jpeg',
+      'https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/pkaqoi7c_WhatsApp%20Image%202026-08-22%20at%202.27.52%20PM.jpeg',
+      'https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/9z3mqf5u_WhatsApp%20Image%202026-08-22%20at%202.27.32%20PM.jpeg',
+    ],
     description:
       'Apne coconut aur beverages ko dijiye ek unique branded identity ✨',
     features: [

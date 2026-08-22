@@ -23,6 +23,7 @@ import FloatingButtons from './components/FloatingButtons';
 import Blog from './components/Blog';
 import BlogPost from './components/BlogPost';
 import Products from './components/Products';
+import ProductDetail from './components/ProductDetail';
 import CitiesPage from './components/CitiesPage';
 import CustomizePage from './components/CustomizePage';
 import CityDetail from './components/CityDetail';
@@ -69,6 +70,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/customize" element={<CustomizePage />} />
           <Route path="/products" element={<Products />} />
+          <Route path="/products/:slug" element={<ProductDetail />} />
           <Route path="/cities" element={<CitiesPage />} />
           <Route path="/cities/:city" element={<CityDetail />} />
           <Route path="/services/:slug" element={<ServiceStory />} />
