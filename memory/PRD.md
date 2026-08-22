@@ -75,3 +75,7 @@ Hero → Customizer → About Us (+ founder) → EventTypes → Stats → Video 
 - **Header logo**: swapped to a transparent-background version of the brand logo (white disc removed) at +25% size (`/public/mr-coconetto-logo.png`).
 - **Products page**: added real photos + renamed to "Customised Stirrer" (gold stirrers), "Customised Hip Flask" (rainbow PalDev flask), "Customised Stamp" (branding stamp). Images are the client's uploaded product photos. Verified all 4 cards render via screenshot.
 - Deployment: app runs in /app, deployment_agent PASS earlier. Custom-domain steps (Entri) provided to user. Admin password rotation still pending user's chosen password.
+
+## 2026-06 session (movable text + product copy)
+- **Customizer**: engraved TEXT is now draggable (reposition up/down/side via preview-text-block) AND resizable (text-resize-slider), mirroring the logo. Users can place text above/below the logo. Verified by testing_agent iteration_7 (100%): drag 50%/32%->75%/80%, size 30px<->92px, order flow POST /api/orders OK (MC-CE41A4).
+- **Products page**: Hip Flask / Stirrer / Stamp updated with client's Hinglish marketing copy (headline + 🔹 feature bullets + script tagline note): 'Har Drink Mein Aapka Brand!', 'Your Brand. Your Style. Your Flask.', 'Aapka Logo • Aapki Branding • Aapka Style'. Real product photos wired in. All verified.

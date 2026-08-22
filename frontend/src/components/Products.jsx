@@ -57,6 +57,9 @@ const Products = () => {
                           </li>
                         ))}
                       </ul>
+                      {p.note && (
+                        <p className="mt-4 text-sm font-script text-pink-600 leading-snug">{p.note}</p>
+                      )}
                       <a href={waLink(`Hi Mr. Coconetto! I'm interested in: ${p.name}.`)} target="_blank" rel="noreferrer" className="mt-5 block">
                         <Button size="sm" className="w-full bg-green-600 hover:bg-green-700 text-white rounded-full">
                           <MessageCircle className="w-4 h-4 mr-2" /> Enquire on WhatsApp

@@ -19,10 +19,12 @@ const Customizer = () => {
   const [logoUrl, setLogoUrl] = useState('');
   const [logoPath, setLogoPath] = useState('');
   const [logoUploading, setLogoUploading] = useState(false);
-  const [logoPos, setLogoPos] = useState({ x: 50, y: 58 });
+  const [logoPos, setLogoPos] = useState({ x: 50, y: 60 });
   const [logoScale, setLogoScale] = useState(0.62);
+  const [textPos, setTextPos] = useState({ x: 50, y: 32 });
+  const [textScale, setTextScale] = useState(1);
   const previewRef = useRef(null);
-  const draggingRef = useRef(false);
+  const draggingRef = useRef(null); // 'logo' | 'text' | null
 
   useEffect(() => {
     const move = (e) => {
@@ -32,9 +34,11 @@ const Customizer = () => {
       const p = e.touches ? e.touches[0] : e;
       const x = ((p.clientX - rect.left) / rect.width) * 100;
       const y = ((p.clientY - rect.top) / rect.height) * 100;
-      setLogoPos({ x: Math.max(12, Math.min(88, x)), y: Math.max(12, Math.min(88, y)) });
+      const clamped = { x: Math.max(12, Math.min(88, x)), y: Math.max(10, Math.min(90, y)) };
+      if (draggingRef.current === 'text') setTextPos(clamped);
+      else setLogoPos(clamped);
     };
-    const up = () => { draggingRef.current = false; };
+    const up = () => { draggingRef.current = null; };
     window.addEventListener('pointermove', move);
     window.addEventListener('pointerup', up);
     window.addEventListener('touchmove', move, { passive: false });
@@ -47,14 +51,14 @@ const Customizer = () => {
     };
   }, []);
 
-  const startLogoDrag = () => { draggingRef.current = true; };
+  const startDrag = (target) => (e) => { e.stopPropagation(); draggingRef.current = target; };
 
   const resetLogo = () => {
     if (logoPreview) URL.revokeObjectURL(logoPreview);
     setLogoPreview('');
     setLogoUrl('');
     setLogoPath('');
-    setLogoPos({ x: 50, y: 58 });
+    setLogoPos({ x: 50, y: 60 });
     setLogoScale(0.62);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
@@ -169,8 +173,8 @@ const Customizer = () => {
                   src={logoPreview}
                   alt="Your logo preview"
                   data-testid="preview-logo"
-                  onPointerDown={startLogoDrag}
-                  onTouchStart={startLogoDrag}
+                  onPointerDown={startDrag('logo')}
+                  onTouchStart={startDrag('logo')}
                   className="absolute z-20 object-contain cursor-move select-none touch-none"
                   style={{
                     left: `${logoPos.x}%`,
@@ -184,32 +188,27 @@ const Customizer = () => {
                   draggable={false}
                 />
               )}
-              {logoPreview && (
-                <div data-testid="logo-resize-control" className="absolute bottom-3 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 bg-white/95 rounded-full px-3 py-1.5 shadow-lg">
-                  <span className="text-[11px] font-medium text-gray-500 whitespace-nowrap">Drag to move · Size</span>
-                  <input
-                    type="range"
-                    min="0.3"
-                    max="1.2"
-                    step="0.05"
-                    value={logoScale}
-                    onChange={(e) => setLogoScale(parseFloat(e.target.value))}
-                    data-testid="logo-resize-slider"
-                    className="w-24 accent-pink-600"
-                  />
-                </div>
-              )}
-              {/* Engraved text overlay — warm burnt tone anchored on the coconut's body */}
+
+              {/* Engraved text — draggable (move up/down/side) + resizable, warm burnt tone */}
               <div
-                className="absolute flex flex-col items-center text-center pointer-events-none px-2 overflow-hidden"
-                style={{ top: '30%', left: '20%', right: '20%', mixBlendMode: 'multiply' }}
+                data-testid="preview-text-block"
+                onPointerDown={startDrag('text')}
+                onTouchStart={startDrag('text')}
+                className="absolute z-20 flex flex-col items-center text-center px-1 cursor-move select-none touch-none"
+                style={{
+                  left: `${textPos.x}%`,
+                  top: `${textPos.y}%`,
+                  width: '66%',
+                  transform: 'translate(-50%, -50%)',
+                  mixBlendMode: 'multiply',
+                }}
               >
                 <div
                   data-testid="preview-print-text"
                   className="font-script leading-tight break-words w-full whitespace-pre-line"
                   style={{
                     color: '#4a2c10',
-                    fontSize: 'clamp(1.7rem, 5.4vw, 3.4rem)',
+                    fontSize: `clamp(${1.4 * textScale}rem, ${4.6 * textScale}vw, ${3.2 * textScale}rem)`,
                     textShadow: '0 1px 0 rgba(120,80,40,0.25)',
                   }}
                 >
@@ -219,11 +218,44 @@ const Customizer = () => {
                   <div
                     data-testid="preview-event-name"
                     className="mt-1.5 font-display font-semibold break-words w-full"
-                    style={{ color: '#5b3f24', fontSize: 'clamp(0.75rem, 1.9vw, 1.1rem)' }}
+                    style={{ color: '#5b3f24', fontSize: `clamp(${0.7 * textScale}rem, ${1.7 * textScale}vw, ${1.05 * textScale}rem)` }}
                   >
                     {eventName}
                   </div>
                 )}
+              </div>
+
+              {/* Controls: resize text (and logo when present) */}
+              <div data-testid="preview-controls" className="absolute bottom-3 left-1/2 -translate-x-1/2 z-30 flex flex-col gap-1.5 bg-white/95 rounded-2xl px-3 py-2 shadow-lg">
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] font-medium text-gray-500 w-[52px] shrink-0">Text size</span>
+                  <input
+                    type="range"
+                    min="0.5"
+                    max="1.9"
+                    step="0.05"
+                    value={textScale}
+                    onChange={(e) => setTextScale(parseFloat(e.target.value))}
+                    data-testid="text-resize-slider"
+                    className="w-28 accent-pink-600"
+                  />
+                </div>
+                {logoPreview && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] font-medium text-gray-500 w-[52px] shrink-0">Logo size</span>
+                    <input
+                      type="range"
+                      min="0.3"
+                      max="1.2"
+                      step="0.05"
+                      value={logoScale}
+                      onChange={(e) => setLogoScale(parseFloat(e.target.value))}
+                      data-testid="logo-resize-slider"
+                      className="w-28 accent-pink-600"
+                    />
+                  </div>
+                )}
+                <span className="text-[10px] text-gray-400 text-center">Drag text or logo to reposition</span>
               </div>
             </div>
           </div>

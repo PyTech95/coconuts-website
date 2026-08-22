@@ -42,34 +42,57 @@ export const PRODUCTS = [
     slug: 'coconut-stirrer',
     icon: 'Utensils',
     name: 'Customised Stirrer',
-    tagline: 'Sip in style',
+    tagline: 'Your Brand, Your Style',
     image:
       'https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/k4959rny_image.png',
     description:
-      'Elegant custom stirrers that pair with every personalized coconut — a premium finishing touch for your welcome drink.',
-    features: ['Branded / themed stirrers', 'Food-safe & reusable options', 'Custom colours available'],
+      'Apne drinks ko dijiye ek premium branded experience ✨',
+    features: [
+      'Custom Logo & Branding',
+      'Multiple Custom Designs',
+      'Perfect for Cocktails, Mocktails & Beverages',
+      'Ideal for Weddings, Events & Corporate Promotions',
+      'Bulk Orders Available',
+    ],
+    note: 'Har Drink Mein Aapka Brand! 🥥',
   },
   {
     slug: 'hip-flask',
     icon: 'FlaskConical',
     name: 'Customised Hip Flask',
-    tagline: 'Keepsake gifting',
+    tagline: 'Premium Branding',
     image:
       'https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/cl9frbav_image.png',
     description:
-      'Personalized hip flasks — a stylish gift or wedding favour, engraved with names, dates or your monogram.',
-    features: ['Custom engraving', 'Great as return gifts', 'Premium packaging'],
+      'Apne brand ko dijiye ek premium & memorable touch ✨',
+    features: [
+      'Custom Logo Engraving',
+      'Name & Initials Customisation',
+      'Premium Finish',
+      'Perfect for Corporate Gifting',
+      'Ideal for Events, Weddings & Promotions',
+      'Bulk & Custom Orders Available',
+    ],
+    note: 'Your Brand. Your Style. Your Flask.',
   },
   {
     slug: 'stamp',
     icon: 'Stamp',
     name: 'Customised Stamp',
-    tagline: 'Your mark, everywhere',
+    tagline: 'Make Your Brand Stand Out',
     image:
       'https://customer-assets-39nsmqrw.emergentagent.net/job_full-stack-coconatu/artifacts/h9l8rcqf_image.png',
     description:
-      'Bespoke stamps for your monogram, logo or wedding hashtag — used to brand coconuts, tags and favours consistently.',
-    features: ['Monogram / logo / hashtag', 'Crisp, repeatable branding', 'Made to your artwork'],
+      'Apne coconut aur beverages ko dijiye ek unique branded identity ✨',
+    features: [
+      'Custom Logo Stamp',
+      'Brand Name & Hashtag',
+      'Clean & Premium Impression',
+      'Perfect for Fresh Coconut Branding',
+      'Ideal for Events, Weddings & Brand Promotions',
+      'Bulk Orders Available',
+    ],
+    note: 'Aapka Logo • Aapki Branding • Aapka Style',
   },
 ];
 
