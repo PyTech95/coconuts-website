@@ -4,13 +4,39 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ------------------------------------------------------------------------
+   Theme colours (RGB channel triplets so Tailwind opacity modifiers work).
+   These are the defaults; the admin "Theme" editor overrides them at runtime
+   on <html style="--c-...">. Light backgrounds are ~50% darker than the
+   original Tailwind tints.
+   ------------------------------------------------------------------------ */
+:root {
+  --c-green-500: 34 197 94;
+  --c-green-600: 22 163 74;
+  --c-green-700: 21 128 61;
+  --c-pink-500: 236 72 153;
+  --c-pink-600: 219 39 119;
+  --c-pink-700: 190 24 93;
+  --c-pink-50: 251 208 229;
+  --c-pink-100: 249 188 218;
+  --c-green-50: 198 242 212;
+  --c-green-100: 180 236 198;
+  --c-beige: 235 228 210;
+  --c-dark: 13 7 16;
+  --c-body-bg: 255 255 255;
+  --c-body-text: 31 41 55;
+  --font-body: 'Poppins';
+  --font-display: 'Playfair Display';
+  --font-script: 'Dancing Script';
+}
+
 body {
   margin: 0;
-  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-body), -apple-system, BlinkMacSystemFont, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #ffffff;
-  color: #1f2937;
+  background: rgb(var(--c-body-bg));
+  color: rgb(var(--c-body-text));
   overflow-x: hidden;
 }
 
@@ -59,6 +85,6 @@ code {
     @apply bg-background text-foreground;
   }
   h1, h2, h3, h4 {
-    font-family: 'Playfair Display', Georgia, serif;
+    font-family: var(--font-display), Georgia, serif;
   }
 }

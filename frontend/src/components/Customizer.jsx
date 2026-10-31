@@ -3,11 +3,15 @@ import axios from 'axios';
 import { Type, Sparkles, Phone, CheckCircle2, MessageCircle, Upload, X, Image as ImageIcon, Minus, Plus } from 'lucide-react';
 import { Button } from './ui/button';
 import { useToast } from '../hooks/use-toast';
-import { CUSTOMIZER, waLink } from '../data/mock';
-
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+import { useContent } from '../cms/ContentContext';
+import { T, Img, Sec } from '../cms/Editable';
+import { API, BACKEND_URL, waLink as wa } from '../lib/api';
 
 const Customizer = () => {
+  const { get } = useContent();
+  const brand = get('brand', {});
+  const maxChars = Number(get('customizer.maxChars', 60)) || 60;
+  const waLink = (msg) => wa(brand.phoneRaw, msg);
   const { toast } = useToast();
   const fileInputRef = useRef(null);
   const [printText, setPrintText] = useState('');
@@ -82,7 +86,7 @@ const Customizer = () => {
       fd.append('file', file);
       const res = await axios.post(`${API}/upload-logo`, fd, { headers: { 'Content-Type': 'multipart/form-data' } });
       setLogoPath(res.data.path);
-      setLogoUrl(`${process.env.REACT_APP_BACKEND_URL}${res.data.url}`);
+      setLogoUrl(`${BACKEND_URL}${res.data.url}`);
       toast({ title: 'Logo added', description: 'Your logo will be engraved by our team.' });
     } catch (err) {
       console.error('Logo upload failed', err);
@@ -141,16 +145,16 @@ const Customizer = () => {
   };
 
   return (
-    <section id="customize" data-testid="customizer-section" className="section-pad bg-gradient-to-b from-pink-50/60 to-white overflow-x-hidden">
+    <Sec id="customize" label="Customize your coconut" data-testid="customizer-section" className="section-pad bg-gradient-to-b from-pink-50/60 to-white overflow-x-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-10">
-          <span className="uppercase tracking-[0.3em] text-xs font-bold text-pink-600">{CUSTOMIZER.label}</span>
+          <T path="customizer.label" as="span" className="uppercase tracking-[0.3em] text-xs font-bold text-pink-600" />
           <h2 className="mt-2 font-display font-extrabold text-4xl md:text-5xl text-gray-900">
-            {CUSTOMIZER.title} <span className="font-script text-pink-600 font-normal">{CUSTOMIZER.script}</span>
+            <T path="customizer.title" as="span" /> <T path="customizer.script" as="span" className="font-script text-pink-600 font-normal" />
           </h2>
-          <p className="mt-3 text-gray-600 max-w-2xl mx-auto">{CUSTOMIZER.subtitle}</p>
+          <T path="customizer.subtitle" as="p" className="mt-3 text-gray-600 max-w-2xl mx-auto" />
           <p className="mt-3 text-xs text-gray-500 max-w-2xl mx-auto bg-green-50 border border-green-100 rounded-full px-4 py-2 inline-block">
-            🥥 {CUSTOMIZER.engraveNote}
+            🥥 <T path="customizer.engraveNote" as="span" />
           </p>
         </div>
 
@@ -158,11 +162,11 @@ const Customizer = () => {
           {/* Live preview */}
           <div data-testid="coconut-preview" className="relative rounded-3xl overflow-hidden bg-black shadow-2xl min-h-[380px] md:min-h-[520px]">
             <span className="absolute top-4 left-4 z-10 inline-flex items-center gap-1.5 bg-white/95 text-pink-600 text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full">
-              <Sparkles className="w-3.5 h-3.5" /> Live Preview
+              <Sparkles className="w-3.5 h-3.5" /> <T path="customizer.ui.previewBadge" as="span" />
             </span>
             <div ref={previewRef} className="relative w-full h-full flex items-center justify-center p-6">
-              <img
-                src={CUSTOMIZER.image}
+              <Img
+                path="customizer.image"
                 alt="Personalized coconut live preview"
                 className="absolute inset-0 w-full h-full object-contain"
                 draggable={false}
@@ -291,7 +295,7 @@ const Customizer = () => {
                     </button>
                   </div>
                 )}
-                <span className="text-[10px] text-gray-400 text-center">Drag text or logo to reposition</span>
+                <T path="customizer.ui.dragHint" as="span" className="text-[10px] text-gray-400 text-center" />
               </div>
             </div>
           </div>
@@ -303,12 +307,10 @@ const Customizer = () => {
                 <div className="w-16 h-16 rounded-full bg-green-100 text-green-700 flex items-center justify-center">
                   <CheckCircle2 className="w-9 h-9" />
                 </div>
-                <h3 className="mt-4 font-display font-bold text-2xl text-gray-900">Order Received!</h3>
-                <p className="mt-1 text-gray-600">Your order number is</p>
+                <T path="customizer.ui.successTitle" as="h3" className="mt-4 font-display font-bold text-2xl text-gray-900" />
+                <T path="customizer.ui.successSub" as="p" className="mt-1 text-gray-600" />
                 <p className="mt-1 font-display font-extrabold text-3xl text-pink-600 tracking-wide">{order.order_number}</p>
-                <p className="mt-3 text-sm text-gray-600 max-w-sm">
-                  We've opened WhatsApp so you can confirm production &amp; payment. Our team will also call you shortly.
-                </p>
+                <T path="customizer.ui.successText" as="p" className="mt-3 text-sm text-gray-600 max-w-sm" />
                 <a
                   href={waLink(
                     `New Coconut Order 🥥\nOrder No: ${order.order_number}\nPrint on Coconut: ${order.print_text}\nEvent: ${order.event_name}\nMobile: ${order.mobile}` +
@@ -319,39 +321,39 @@ const Customizer = () => {
                   data-testid="order-success-whatsapp"
                   className="mt-5 inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white rounded-full px-6 py-3 text-sm font-semibold shadow-lg"
                 >
-                  <MessageCircle className="w-4 h-4" /> Open WhatsApp
+                  <MessageCircle className="w-4 h-4" /> <T path="customizer.ui.openWhatsapp" as="span" />
                 </a>
                 <Button onClick={() => { setOrder(null); setPrintText(''); setEventName(''); setMobile(''); resetLogo(); }} variant="outline" className="mt-3 rounded-full border-pink-300 text-pink-700 hover:bg-pink-50">
-                  Design Another Coconut
+                  <T path="customizer.ui.designAnother" as="span" />
                 </Button>
               </div>
             ) : (
               <form onSubmit={handleSubmit} data-testid="order-form" className="space-y-5">
                 <div>
                   <label className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-sm font-bold text-gray-800">
-                    <span className="inline-flex items-center gap-2"><Type className="w-4 h-4 text-pink-600" /> Print on Coconut</span>
-                    <span className="w-full sm:w-auto text-xs font-normal text-gray-400">(optional if you add a logo · press Enter for a new line · max {CUSTOMIZER.maxChars})</span>
+                    <span className="inline-flex items-center gap-2"><Type className="w-4 h-4 text-pink-600" /> <T path="customizer.ui.printLabel" as="span" /></span>
+                    <T path="customizer.ui.printHint" as="span" vars={{ max: maxChars }} className="w-full sm:w-auto text-xs font-normal text-gray-400" />
                   </label>
                   <textarea
                     data-testid="order-print-text"
                     rows={3}
                     className={`${field} mt-2 resize-none`}
-                    placeholder={"e.g.\nRadha\nand\nRupesh"}
-                    maxLength={CUSTOMIZER.maxChars}
+                    placeholder={get('customizer.ui.printPlaceholder', 'e.g.\nRadha\nand\nRupesh')}
+                    maxLength={maxChars}
                     value={printText}
                     onChange={(e) => setPrintText(e.target.value)}
                   />
-                  <div className="text-right text-xs text-gray-400 mt-1">{printText.length}/{CUSTOMIZER.maxChars}</div>
+                  <div className="text-right text-xs text-gray-400 mt-1">{printText.length}/{maxChars}</div>
                 </div>
 
                 <div>
                   <label className="flex items-center gap-2 text-sm font-bold text-gray-800">
-                    <Sparkles className="w-4 h-4 text-pink-600" /> Event Name <span className="text-pink-600">*</span>
+                    <Sparkles className="w-4 h-4 text-pink-600" /> <T path="customizer.ui.eventLabel" as="span" /> <span className="text-pink-600">*</span>
                   </label>
                   <input
                     data-testid="order-event-name"
                     className={`${field} mt-2`}
-                    placeholder="e.g. Priya & Rohan's Sangeet"
+                    placeholder={get('customizer.ui.eventPlaceholder', '')}
                     value={eventName}
                     onChange={(e) => setEventName(e.target.value)}
                   />
@@ -359,12 +361,12 @@ const Customizer = () => {
 
                 <div>
                   <label className="flex items-center gap-2 text-sm font-bold text-gray-800">
-                    <Phone className="w-4 h-4 text-pink-600" /> Mobile Number <span className="text-pink-600">*</span>
+                    <Phone className="w-4 h-4 text-pink-600" /> <T path="customizer.ui.mobileLabel" as="span" /> <span className="text-pink-600">*</span>
                   </label>
                   <input
                     data-testid="order-mobile"
                     className={`${field} mt-2`}
-                    placeholder="+91 98xxxxxxxx"
+                    placeholder={get('customizer.ui.mobilePlaceholder', '')}
                     value={mobile}
                     onChange={(e) => setMobile(e.target.value)}
                   />
@@ -372,8 +374,8 @@ const Customizer = () => {
 
                 <div>
                   <label className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-sm font-bold text-gray-800">
-                    <span className="inline-flex items-center gap-2"><ImageIcon className="w-4 h-4 text-pink-600" /> Add a Logo / Image</span>
-                    <span className="w-full sm:w-auto text-xs font-normal text-gray-400">(optional — PNG, JPG · max 5MB)</span>
+                    <span className="inline-flex items-center gap-2"><ImageIcon className="w-4 h-4 text-pink-600" /> <T path="customizer.ui.logoLabel" as="span" /></span>
+                    <T path="customizer.ui.logoHint" as="span" className="w-full sm:w-auto text-xs font-normal text-gray-400" />
                   </label>
                   <input
                     ref={fileInputRef}
@@ -390,7 +392,7 @@ const Customizer = () => {
                       data-testid="order-logo-trigger"
                       className="mt-2 w-full flex items-center justify-center gap-2 px-4 py-4 rounded-xl border-2 border-dashed border-pink-200 text-pink-600 hover:bg-pink-50 text-sm font-medium transition-colors"
                     >
-                      <Upload className="w-4 h-4" /> Upload your logo or artwork
+                      <Upload className="w-4 h-4" /> <T path="customizer.ui.uploadBtn" as="span" />
                     </button>
                   ) : (
                     <div className="mt-2 flex items-center gap-3 p-3 rounded-xl border border-gray-200 bg-gray-50">
@@ -406,11 +408,9 @@ const Customizer = () => {
                 </div>
 
                 <div className="flex flex-col sm:flex-row sm:items-center gap-4 pt-2">
-                  <p className="text-xs text-gray-500 flex-1">
-                    You'll get an order number instantly. We'll call you to confirm production &amp; payment.
-                  </p>
+                  <T path="customizer.ui.footnote" as="p" className="text-xs text-gray-500 flex-1" />
                   <Button type="submit" disabled={submitting} data-testid="order-submit" className="bg-green-600 hover:bg-green-700 text-white rounded-full px-8 py-6 font-semibold shadow-lg">
-                    {submitting ? 'Submitting…' : (<><MessageCircle className="w-4 h-4 mr-2" /> Submit Order</>)}
+                    {submitting ? get('customizer.ui.submitting', 'Submitting…') : (<><MessageCircle className="w-4 h-4 mr-2" /> <T path="customizer.ui.submitBtn" as="span" /></>)}
                   </Button>
                 </div>
               </form>
@@ -418,7 +418,7 @@ const Customizer = () => {
           </div>
         </div>
       </div>
-    </section>
+    </Sec>
   );
 };
 

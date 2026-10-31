@@ -63,39 +63,10 @@ Hero → Customizer → About Us (+ founder) → EventTypes → Stats → Video 
 - 2026-06: Ported full codebase into workspace `/app` (preserved protected .env). Backend health OK, `/api/orders` + `/api/enquiries` verified via curl. deployment_agent: **PASS** (fixed one unbounded `/api/status` query → added sort+limit 100). App is deployment-ready.
 - 2026-06 mobile polish pass (items 8–15): mobile header logo enlarged; "Request a Quote" confirmed green (pink kept as secondary accent); hero marquee/ticker made responsive with wider edge-fade + seamless loop; floating WhatsApp/Call buttons made smaller & repositioned; Cities list confirmed clean (no NCR/Goa); "Fresh & Hygienically Prepared" wording confirmed; Sangeet & Mehndi card description no longer clipped on mobile (stronger gradient + taller collage, removed line-clamp); mobile hero heading made more compact while keeping premium typography.
 
-## Ship / Deploy log (continued)
-- 2026-06 (re-import): User uploaded full codebase zip and said "deploy here". Ported source into `/app` (frontend src + backend server.py), preserved protected `.env` (MONGO_URL/DB_NAME) and added deploy-critical vars: JWT_SECRET (fresh), ADMIN_EMAIL/ADMIN_PASSWORD (admin@mrcoconetto.com), EMERGENT_LLM_KEY + INTEGRATION_PROXY_URL (object storage), RESEND_API_KEY empty (email no-op). Installed `resend`. Ran `yarn install`.
-- Verified running: `/api/health` = ok/db up; POST `/api/enquiries`, `/api/orders`, `/api/auth/login` all pass via curl; homepage renders full site. Removed a stray default `admin@example.com` user seeded before env loaded, and cleaned test data.
-- deployment_agent: **PASS** (no blockers). App is deployment-ready; user to click the platform **Deploy** button to go live.
-- Post-deploy TODO (P2): set `CORS_ORIGINS` to the live domain (drop `*`); optionally add `RESEND_API_KEY` to activate email alerts.
-
-## 2026-06 session (deploy import + engraving + products)
-- Reported "typing bug" on Customizer: verified NOT reproducible by testing_agent (iteration_6, frontend 100%) — real keystrokes land, field keeps focus, live preview updates, no scroll jump on desktop+mobile. Root cause of the earlier "0/60" was a screenshot-tool artifact.
-- **Customizer engraving revamp**: replaced preview base with a realistic blank shaved "lantern-shape" coconut (matches the real engraved product the client shared); print text now renders as a warm burnt-brown engraving (mixBlendMode multiply); uploaded photo/logo renders with a sepia "burnt engraving" filter, draggable + resizable. Preview bg changed black→cream.
-- **Header logo**: swapped to a transparent-background version of the brand logo (white disc removed) at +25% size (`/public/mr-coconetto-logo.png`).
-- **Products page**: added real photos + renamed to "Customised Stirrer" (gold stirrers), "Customised Hip Flask" (rainbow PalDev flask), "Customised Stamp" (branding stamp). Images are the client's uploaded product photos. Verified all 4 cards render via screenshot.
-- Deployment: app runs in /app, deployment_agent PASS earlier. Custom-domain steps (Entri) provided to user. Admin password rotation still pending user's chosen password.
-
-## 2026-06 session (movable text + product copy)
-- **Customizer**: engraved TEXT is now draggable (reposition up/down/side via preview-text-block) AND resizable (text-resize-slider), mirroring the logo. Users can place text above/below the logo. Verified by testing_agent iteration_7 (100%): drag 50%/32%->75%/80%, size 30px<->92px, order flow POST /api/orders OK (MC-CE41A4).
-- **Products page**: Hip Flask / Stirrer / Stamp updated with client's Hinglish marketing copy (headline + 🔹 feature bullets + script tagline note): 'Har Drink Mein Aapka Brand!', 'Your Brand. Your Style. Your Flask.', 'Aapka Logo • Aapki Branding • Aapka Style'. Real product photos wired in. All verified.
-
-## 2026-06 session (product detail pages + galleries)
-- New **Product Detail page** at /products/:slug (ProductDetail.jsx) with a main image + clickable thumbnail gallery, features, note, WhatsApp enquiry + "Customize Yours" + Back links. Product cards on /products are now clickable (image, title, "View details & gallery" link).
-- Galleries added (client's real photos): Hip Flask (5 imgs: PalDev, RoopKaMann, A|D, Keshav&Chetna + main), Stirrer (5: fan, WISHFUL WEDDINGS, #JADE cloud tags, brass dies + main; skipped an Etsy screenshot that had another site's branding/phone chrome), Stamp (6: hot-stamp handles, Fred's Burgers, BURGER HOUSE, SAINS iron, MS/KJ buns + main).
-- Verified by testing_agent iteration_8 (frontend 100%, 24/24): card navigation, thumb switching, main-image swap, WhatsApp/back/customize links, and 'product not found' fallback.
-
-## 2026-06 session (banta product + coconut image revert)
-- Reverted Customizer CUSTOMIZER.image back to the original real shaved coconut (7wrllrc3, black bg) — the AI-generated blank coconut looked like a wooden log; user asked for the original. Restored preview bg to bg-black and re-tuned default text/logo positions (text y44, logo y64). Draggable+resizable text feature retained.
-- Added new product **Banta Bottle** (Mr Coconetto × Banta Bro soft drinks) with gallery: Flavor Fiesta combined poster (main) + Masala Fizz + Kala Khatta + Blue Barry. Uses lucide 'CupSoda' icon (registered in Products.jsx + ProductDetail.jsx iconMap). Flavours listed in features + tagline note. Verified via screenshots (products grid + /products/banta-bottle detail with 4 thumbs).
-
-## 2026-06 session (text small/big buttons)
-- Customizer preview-controls now have explicit − / + buttons for TEXT (text-size-minus/plus, clamp 0.5–1.9) and LOGO (logo-size-minus/plus, clamp 0.3–1.2) alongside the sliders, so users can size text/logo precisely on the coconut. Verified testing_agent iteration_9 (frontend 100%): text font 25.6px↔74px, logo width 93px↔287px, sliders in sync, all regressions (typing, drag, order, coconut image) pass.
-
-## 2026-06 session (Admin CMS + inline live editor) — MAJOR
-- Made site content DB-backed. New collections: site_content (hero/about/brand/seo) + products. Public: GET /api/content, /api/products, /api/products/{slug}. Admin (JWT): PUT /api/content (deep-merge), POST/PUT/DELETE /api/admin/products, PATCH/DELETE /api/admin/orders, DELETE /api/admin/enquiries. Orders now have a status field. Startup seeds content + 5 products.
-- New Admin Dashboard (/admin, replaces AdminInbox) with tabs: Orders (status dropdown + delete), Enquiries (delete), Products (full CRUD + main image & gallery upload via object storage), Content (hero/about/brand text + image upload), SEO (meta title/description/keywords). View Site button.
-- Inline LIVE editor: floating AdminBar (visible only when logged in) with Edit Mode toggle. Hero + About texts (EditableText, contentEditable, save-on-blur) and About mascot image (EditableImage upload) editable directly on the page. Seo.jsx applies content.seo to document. Hero/About/Products/ProductDetail read from DB with mock.js fallback.
-- Context: src/context/SiteContent.js (content fetch, editMode, saveContent, uploadImage). Files: AdminDashboard.jsx, AdminBar.jsx, admin/Editable.jsx, Seo.jsx.
-- Verified testing_agent iteration_10: backend 13/13, frontend 100% — login, all tabs, orders status/delete, product CRUD reflecting on /products, content edits reflecting on homepage, SEO title, inline edit persistence, logout. Test data reverted.
-- Admin: admin@mrcoconetto.com / Coconetto@2026.
+- 2026-10 CMS batch (Pytech Digital):
+  - **Full CMS**: all content moved to `frontend/src/cms/defaultContent.js`; saved edits in MongoDB `site_content` via `GET/PUT /api/content` (30 revisions kept). Frontend merges saved content over defaults.
+  - **Live Editor** (`/?edit=1`, admin only): click-to-edit text (font/size/weight/colour/highlight/align/spacing), images & videos (upload / library / URL), section background colours, hide/show, add-remove-reorder lists (slides, services, plans, products, blog posts, FAQs, testimonials, cities…), undo/redo, Ctrl+S save.
+  - **Backend Editor** (`/admin`): schema-driven forms (`src/cms/schema.js`) for every section, Blog & Products CRUD with block editor, Media Library (`POST /api/admin/upload`, images ≤15 MB / videos ≤60 MB), Theme (brand colours, light tints, fonts), Orders & Enquiries inbox with CSV export.
+  - **Hero slider**: Ken-Burns image slides + short autoplay video clips (`public/videos/`), bottom-left text, right-side buttons, arrows/dots/progress, pause on hover, keyboard arrows.
+  - **Backgrounds**: light tints (pink-50/green-50/100, about beige) darkened ~50 % via CSS variables in `index.css` + Tailwind palette override.
+  - Local dev without MongoDB: `MONGO_URL=mock://` (mongomock-motor). Preview build: `scripts/build-preview.sh`.
