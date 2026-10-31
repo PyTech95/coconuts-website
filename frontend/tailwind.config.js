@@ -13,6 +13,36 @@ module.exports = {
         sm: 'calc(var(--radius) - 4px)'
       },
       colors: {
+        // Brand palette driven by CSS variables (editable from the admin Theme panel).
+        // Light tints (50/100) are ~50% darker than Tailwind defaults.
+        green: {
+          50: 'rgb(var(--c-green-50) / <alpha-value>)',
+          100: 'rgb(var(--c-green-100) / <alpha-value>)',
+          200: '#bbf7d0',
+          300: '#86efac',
+          400: '#4ade80',
+          500: 'rgb(var(--c-green-500) / <alpha-value>)',
+          600: 'rgb(var(--c-green-600) / <alpha-value>)',
+          700: 'rgb(var(--c-green-700) / <alpha-value>)',
+          800: '#166534',
+          900: '#14532d',
+          950: '#052e16',
+        },
+        pink: {
+          50: 'rgb(var(--c-pink-50) / <alpha-value>)',
+          100: 'rgb(var(--c-pink-100) / <alpha-value>)',
+          200: '#fbcfe8',
+          300: '#f9a8d4',
+          400: '#f472b6',
+          500: 'rgb(var(--c-pink-500) / <alpha-value>)',
+          600: 'rgb(var(--c-pink-600) / <alpha-value>)',
+          700: 'rgb(var(--c-pink-700) / <alpha-value>)',
+          800: '#9d174d',
+          900: '#831843',
+          950: '#500724',
+        },
+        beige: 'rgb(var(--c-beige) / <alpha-value>)',
+        dark: 'rgb(var(--c-dark) / <alpha-value>)',
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         card: {
