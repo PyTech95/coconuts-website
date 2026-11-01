@@ -1,0 +1,78 @@
+# Every push to main builds the WordPress theme and publishes it as a GitHub Release.
+# WordPress sites using the theme then show "Update available" (Dashboard → Updates).
+# Optional: set the VPS_* secrets and the new theme is installed on your server automatically.
+name: Build WordPress theme
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.ver.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+          cache-dependency-path: frontend/yarn.lock
+
+      - name: Version
+        id: ver
+        run: |
+          BASE=$(grep -m1 '^Version:' wordpress-theme/mr-coconetto/style.css | awk '{print $2}' | cut -d. -f1-2)
+          echo "version=${BASE}.${GITHUB_RUN_NUMBER}" >> "$GITHUB_OUTPUT"
+
+      - name: Install
+        working-directory: frontend
+        run: yarn install --frozen-lockfile --non-interactive
+
+      - name: Build theme zip
+        env:
+          THEME_VERSION: ${{ steps.ver.outputs.version }}
+        run: bash build-wp-theme.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mr-coconetto-wordpress-theme
+          path: dist/mr-coconetto-wordpress-theme.zip
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.ver.outputs.version }}
+        run: |
+          gh release create "v$VERSION" dist/mr-coconetto-wordpress-theme.zip \
+            --title "Mr. Coconetto theme $VERSION" \
+            --notes "WordPress theme built from ${GITHUB_SHA::7}. Install: WordPress → Appearance → Themes → Add New → Upload Theme. Existing sites update from Dashboard → Updates." \
+            --latest
+
+  deploy:
+    # Runs only when the VPS_HOST secret exists.
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      VPS_HOST: ${{ secrets.VPS_HOST }}
+    steps:
+      - name: Install the new theme on the server
+        if: env.VPS_HOST != ''
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script: |
+            set -e
+            WP_PATH="${{ secrets.VPS_WP_PATH || '/var/www/mrcoconetto' }}"
+            URL="https://github.com/${{ github.repository }}/releases/download/v${{ needs.build.outputs.version }}/mr-coconetto-wordpress-theme.zip"
+            sudo -u www-data wp --path="$WP_PATH" theme install "$URL" --force --activate
+            echo "Theme ${{ needs.build.outputs.version }} installed"

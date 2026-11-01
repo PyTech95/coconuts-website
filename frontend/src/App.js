@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import './App.css';
-import { BrowserRouter, HashRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Hero from './components/Hero';
+import ScrollReveal from './components/ScrollReveal';
 import Customizer from './components/Customizer';
 import AboutUs from './components/AboutUs';
 import EventTypes from './components/EventTypes';
@@ -23,107 +24,85 @@ import FloatingButtons from './components/FloatingButtons';
 import Blog from './components/Blog';
 import BlogPost from './components/BlogPost';
 import Products from './components/Products';
-import ProductDetail from './components/ProductDetail';
 import CitiesPage from './components/CitiesPage';
 import CustomizePage from './components/CustomizePage';
 import CityDetail from './components/CityDetail';
 import ServiceStory from './components/ServiceStory';
 import InstagramFeed from './components/InstagramFeed';
 import AdminLogin from './components/AdminLogin';
-import AdminLayout from './admin/AdminLayout';
+import AdminLayout from './components/admin/AdminLayout';
+import AdminDashboard from './components/admin/AdminDashboard';
+import { AdminOrders, AdminEnquiries } from './components/admin/AdminLists';
+import AdminContent from './components/admin/AdminContent';
+import AdminSections from './components/admin/AdminSections';
+import AdminPictures from './components/admin/AdminPictures';
+import { AdminBlog, AdminColours, AdminHistory } from './components/admin/AdminExtras';
+import LiveEditor from './components/editor/LiveEditor';
+import { SiteContentProvider, LiveArea } from './context/SiteContent';
 import { Toaster } from './components/ui/toaster';
-import { ContentProvider, useContent } from './cms/ContentContext';
-import { EditorUIProvider } from './cms/Editable';
-import EditorToolbar from './cms/EditorToolbar';
 
-// The preview build (static hosting without server-side routing) uses hash URLs.
-const Router = process.env.REACT_APP_ROUTER === 'hash' ? HashRouter : BrowserRouter;
-
-const HomePage = () => (
-  <div className="bg-white">
-    <Header />
-    <main>
-      <Hero />
-      <Customizer />
-      <AboutUs />
-      <EventTypes />
-      <Stats />
-      <VideoSection />
-      <Services />
-      <Plans />
-      <Cities />
-      <Occasions />
-      <WhyChoose />
-      <CTA />
-      <Testimonials />
-      <BlogTeaser />
-      <FAQ />
-      <Contact />
-    </main>
-    <InstagramFeed />
-    <Footer />
-    <FloatingButtons />
-  </div>
-);
-
-/** Keeps <title> / meta description in sync with the editable SEO settings. */
-const SeoHead = () => {
-  const { get } = useContent();
-  const { pathname } = useLocation();
-  const title = get('seo.title');
-  const desc = get('seo.description');
-  const keywords = get('seo.keywords');
-  useEffect(() => {
-    if (pathname.startsWith('/blog/') || pathname.startsWith('/admin')) return;
-    if (title) document.title = title;
-    const setMeta = (name, val) => {
-      if (!val) return;
-      let el = document.querySelector(`meta[name="${name}"]`);
-      if (!el) { el = document.createElement('meta'); el.setAttribute('name', name); document.head.appendChild(el); }
-      el.setAttribute('content', val);
-    };
-    setMeta('description', desc);
-    setMeta('keywords', keywords);
-  }, [title, desc, keywords, pathname]);
-  return null;
-};
-
-const ScrollToHash = () => {
-  const { hash, pathname } = useLocation();
-  useEffect(() => {
-    if (hash) {
-      const el = document.querySelector(hash);
-      if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 50);
-    }
-  }, [hash, pathname]);
-  return null;
+const HomePage = () => {
+  return (
+    <div className="bg-white">
+      <Header />
+      <main>
+        <Hero />
+        <Customizer />
+        <AboutUs />
+        <EventTypes />
+        <Stats />
+        <VideoSection />
+        <Services />
+        <Plans />
+        <Cities />
+        <Occasions />
+        <WhyChoose />
+        <CTA />
+        <Testimonials />
+        <BlogTeaser />
+        <FAQ />
+        <Contact />
+      </main>
+      <InstagramFeed />
+      <Footer />
+      <FloatingButtons />
+    </div>
+  );
 };
 
 function App() {
   return (
     <div className="App">
-      <Router>
-        <ContentProvider>
-          <EditorUIProvider>
-            <SeoHead />
-            <ScrollToHash />
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/customize" element={<CustomizePage />} />
-              <Route path="/products" element={<Products />} />
-              <Route path="/products/:slug" element={<ProductDetail />} />
-              <Route path="/cities" element={<CitiesPage />} />
-              <Route path="/cities/:city" element={<CityDetail />} />
-              <Route path="/services/:slug" element={<ServiceStory />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/blog/:slug" element={<BlogPost />} />
-              <Route path="/admin/login" element={<AdminLogin />} />
-              <Route path="/admin/*" element={<AdminLayout />} />
-            </Routes>
-            <EditorToolbar />
-          </EditorUIProvider>
-        </ContentProvider>
-      </Router>
+      <SiteContentProvider>
+      <BrowserRouter>
+        <ScrollReveal />
+        <LiveEditor />
+        <Routes>
+          <Route path="/" element={<LiveArea><HomePage /></LiveArea>} />
+          <Route path="/customize" element={<LiveArea><CustomizePage /></LiveArea>} />
+          <Route path="/products" element={<LiveArea><Products /></LiveArea>} />
+          <Route path="/cities" element={<LiveArea><CitiesPage /></LiveArea>} />
+          <Route path="/cities/:city" element={<LiveArea><CityDetail /></LiveArea>} />
+          <Route path="/services/:slug" element={<LiveArea><ServiceStory /></LiveArea>} />
+          <Route path="/blog" element={<LiveArea><Blog /></LiveArea>} />
+          <Route path="/blog/:slug" element={<LiveArea><BlogPost /></LiveArea>} />
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="sections" element={<AdminSections />} />
+            <Route path="pictures" element={<AdminPictures />} />
+            <Route path="words" element={<AdminContent />} />
+            <Route path="content" element={<AdminContent />} />
+            <Route path="colours" element={<AdminColours />} />
+            <Route path="history" element={<AdminHistory />} />
+            <Route path="orders" element={<AdminOrders />} />
+            <Route path="enquiries" element={<AdminEnquiries />} />
+            <Route path="blog" element={<AdminBlog />} />
+          </Route>
+          <Route path="*" element={<LiveArea><HomePage /></LiveArea>} />
+        </Routes>
+      </BrowserRouter>
+      </SiteContentProvider>
       <Toaster />
     </div>
   );

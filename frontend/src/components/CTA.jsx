@@ -1,32 +1,27 @@
 import React from 'react';
 import { Phone, MessageCircle } from 'lucide-react';
-import { useContent } from '../cms/ContentContext';
-import { T, Sec } from '../cms/Editable';
-import { waLink } from '../lib/api';
+import { BRAND, waLink } from '../data/mock';
 
 const CTA = () => {
-  const { get } = useContent();
-  const brand = get('brand', {});
-
   return (
-    <Sec id="cta" label="Call to action" className="py-16">
+    <section className="py-16 bg-blush">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="relative rounded-[2rem] overflow-hidden bg-gradient-to-r from-green-600 via-green-500 to-pink-500 p-10 md:p-14 text-center text-white shadow-2xl">
           <div className="absolute -top-16 -right-16 w-64 h-64 rounded-full bg-white/10 blur-3xl" />
           <div className="absolute -bottom-16 -left-16 w-64 h-64 rounded-full bg-white/10 blur-3xl" />
-          <T path="cta.title" as="h3" className="relative font-display font-bold text-3xl md:text-4xl" />
-          <T path="cta.desc" as="p" className="relative mt-3 text-white/90 max-w-2xl mx-auto" />
+          <h3 className="relative font-display font-bold text-3xl md:text-4xl">Ready to make your event unforgettable?</h3>
+          <p className="relative mt-3 text-white/90 max-w-2xl mx-auto">Trusted by 1000+ events across India for fresh, personalized coconuts. Get a custom quote for your celebration today.</p>
           <div className="relative mt-7 flex flex-wrap justify-center gap-3">
-            <a href={`tel:${brand.phone}`} className="inline-flex items-center gap-2 bg-white text-green-700 px-6 py-3 rounded-full font-bold shadow-lg hover:bg-gray-50">
-              <Phone className="w-4 h-4" /> <T path="cta.callLabel" as="span" /> <T path="brand.phone" as="span" />
+            <a href={`tel:${BRAND.phone}`} className="inline-flex items-center gap-2 bg-white text-green-700 px-6 py-3 rounded-full font-bold shadow-lg hover:bg-gray-50">
+              <Phone className="w-4 h-4" /> Call {BRAND.phone}
             </a>
-            <a href={waLink(brand.phoneRaw, get('cta.waMsg', ''))} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 bg-pink-700 hover:bg-pink-800 text-white px-6 py-3 rounded-full font-bold shadow-lg">
-              <MessageCircle className="w-4 h-4" /> <T path="cta.waLabel" as="span" />
+            <a href={waLink('Hi Mr. Coconetto! I would like a custom quote for personalized coconuts.')} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 bg-pink-700 hover:bg-pink-800 text-white px-6 py-3 rounded-full font-bold shadow-lg">
+              <MessageCircle className="w-4 h-4" /> Get a Quote on WhatsApp
             </a>
           </div>
         </div>
       </div>
-    </Sec>
+    </section>
   );
 };
 

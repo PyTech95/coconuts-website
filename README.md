@@ -1,79 +1,96 @@
-# Mr. Coconetto — Website + CMS
+# Mr. Coconetto — WordPress website
 
-Premium personalized-coconut brand website with a **full content editor**:
+Personalized-coconut brand website (hero slider, coconut customizer, services, plans, blog,
+orders & enquiries) packaged as a **WordPress theme**. Everything runs on your own WordPress
+— no Emergent, no separate backend, no outside service.
 
-* **Live Editor** — open the site with `?edit=1` (after admin login) and click on any text,
-  image, video or section to edit it in place: text, font, size, weight, colour, highlight,
-  alignment, section background colour, hide/show, replace images & videos, add / remove /
-  reorder slides, services, plans, products, blog posts, FAQs, testimonials, cities…
-* **Backend Editor** — `/admin`: form-based editor for every section, Blog & Products CRUD,
-  Media Library (upload photos / short videos), Theme (brand colours, light background
-  tints, fonts), plus the Orders & Enquiries inbox.
-* **Hero slider** — animated Ken-Burns image slides mixed with short autoplaying video
-  clips, text bottom-left, buttons right, arrows / dots / progress, pause on hover.
+After logging in to WordPress, **everything on the website can be changed** — words,
+pictures, videos, button links, colours, lists (slides, services, plans, FAQ, cities…) and
+blog posts — so easily that a 10-year-old can do it.
 
 ```
-frontend/   React 19 (CRA + craco), Tailwind, shadcn/ui, framer-motion
-backend/    FastAPI + MongoDB (motor)
+frontend/            React app (the website) — CRA + Tailwind
+wordpress-theme/     WordPress theme: PHP (storage, REST API, wp-admin pages, updates from GitHub)
+build-wp-theme.sh    builds dist/mr-coconetto-wordpress-theme.zip
+scripts/vps-install.sh   one-command install on an Ubuntu VPS
+.github/workflows/   every push to main → new theme zip on the Releases page
 ```
 
-## Run locally
+## 1. Put it on your VPS (one command)
+
+Point your domain's DNS **A record** to the VPS IP, log in to the VPS as root (Ubuntu 22.04 / 24.04), then:
 
 ```bash
-# backend
-cd backend
-cp .env.example .env            # edit values; MONGO_URL=mock:// works without MongoDB
-pip install -r requirements.txt  # (+ requirements-dev.txt for mock DB / tests)
-uvicorn server:app --reload --port 8000
-
-# frontend
-cd frontend
-cp .env.example .env            # REACT_APP_BACKEND_URL=http://localhost:8000
-yarn install
-yarn start                       # http://localhost:3000
+curl -fsSL https://raw.githubusercontent.com/PyTech95/coconuts-website/main/scripts/vps-install.sh -o vps-install.sh
+sudo DOMAIN=mrcoconetto.com ADMIN_EMAIL=you@example.com bash vps-install.sh
 ```
 
-Admin login: `/admin/login` — credentials come from `ADMIN_EMAIL` / `ADMIN_PASSWORD` in
-`backend/.env` (the admin user is created/updated on backend start).
+It installs Nginx, PHP, MariaDB, WordPress, the latest theme from GitHub and a free SSL
+certificate, and prints the WordPress login. Run it again any time — it only updates what is needed.
 
-## How content works
+**Already have WordPress (cPanel, Hostinger, any host)?** Download
+`mr-coconetto-wordpress-theme.zip` from the
+[Releases page](https://github.com/PyTech95/coconuts-website/releases/latest) →
+WordPress → *Appearance → Themes → Add New → Upload Theme* → *Activate*. That's all
+(pretty links and the sample blog posts are set up automatically).
 
-* All default content lives in `frontend/src/cms/defaultContent.js` (texts, images, lists,
-  theme colours).
-* Saved edits are stored in MongoDB (`site_content` collection) via `GET/PUT /api/content`
-  and merged over the defaults at runtime — so new keys added in code keep working and
-  the client's edits are never lost. The last 30 versions are kept in `content_revisions`.
-* Uploaded media is stored in Emergent object storage when `EMERGENT_LLM_KEY` is set,
-  otherwise on local disk (`UPLOAD_DIR`, served from `/api/uploads/...`).
-* Components use `useContent()` + `<T path="…"/>` (text), `<Img path="…"/>`, `<Vid/>`,
-  `<Sec id="…"/>` (section) and `<ListTools path="…"/>` from `src/cms/Editable.jsx`.
-  The admin forms are generated from `src/cms/schema.js`.
+## 2. Change the website
 
-### Background colours
-Light tints were darkened ~50 % vs. the original Tailwind `pink-50 / green-50` etc. They are
-CSS variables (`frontend/src/index.css`) wired into Tailwind (`tailwind.config.js`) and
-editable from **Admin → Theme**.
+Log in at `yourdomain.com/wp-admin`. You land on **Mr. Coconetto → Start here**:
 
-## API
+| Button | What it does |
+|---|---|
+| ✏️ **Edit the website** | Opens the site with an editing bar. Tap any **words** to type new ones, tap any **picture/video** to upload a new one, tap a **button** to change its words *and* where it goes. Press the green **Save**. |
+| 🧩 **Change sections** | Every section as a simple form: add / remove / move slides, services, plans, FAQ, testimonials, cities, menu links, products, Instagram pictures… |
+| 🖼️ **Change pictures** | Every picture and video of the website on one page, each with *Upload new photo* / *My pictures* / *Original*. |
+| 🎨 **Change colours** | Brand green, pink and light-pink background. |
+| 📝 **Blog** | Normal WordPress posts (*Posts → Add New*). Featured image = picture on the blog card. |
+| 📦 **Orders** / 💬 **Enquiries** | Orders from "Customize Your Coconut" and messages from the contact form. Email alerts go to the addresses set on *Start here*. |
+| ⏪ **Undo / old versions** | Every Save keeps the previous version (last 30). One click goes back — including to the original website. |
 
-| Method | Path | Auth | Purpose |
-|---|---|---|---|
-| GET | `/api/content` | public | current site content |
-| PUT | `/api/content` | admin | save content (keeps revisions) |
-| GET | `/api/admin/content/revisions` | admin | list revisions |
-| POST | `/api/admin/content/revisions/{id}/restore` | admin | restore a revision |
-| POST | `/api/admin/upload` | admin | upload image (≤15 MB) or video (≤60 MB) |
-| GET | `/api/admin/media` | admin | media library |
-| DELETE | `/api/admin/media/{id}` | admin | delete media |
-| POST | `/api/auth/login` | public | admin login → Bearer token |
-| GET | `/api/admin/orders`, `/api/admin/enquiries` | admin | inbox |
-| POST | `/api/orders`, `/api/enquiries`, `/api/upload-logo` | public | customer flows |
+While editing there is also **Undo** (Ctrl+Z), **Save** (Ctrl+S), and a reminder if you try to leave without saving.
+Uploaded files go to the normal WordPress **Media Library**.
 
-## Production notes
+The editor is also available at `yourdomain.com/admin` (same WordPress login).
 
-* Set `CORS_ORIGINS` to the real domain(s), a strong `JWT_SECRET` and `ADMIN_PASSWORD`.
-* Serve `frontend/build` as a single-page app (all routes → `index.html`).
-* Set `REACT_APP_BACKEND_URL` before `yarn build` (or leave empty when `/api` is proxied on
-  the same domain).
-* `scripts/build-preview.sh` builds a static demo (hash routing, no backend, edits kept in
-  the browser) — used only for previews.
+## 3. Updates from GitHub
+
+* Push to `main` → GitHub Actions builds the theme and publishes a new **Release**
+  (`v2.0.<run number>`).
+* Every WordPress site with the theme shows **Update available** under *Dashboard → Updates*
+  (checked every 6 hours, or press *Check again*). One click updates it. Your words, pictures
+  and posts are stored in WordPress, so updates never overwrite them.
+* **Automatic install on your VPS (optional):** in GitHub → *Settings → Secrets and variables →
+  Actions* add `VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY` (and optionally `VPS_PORT`, `VPS_WP_PATH`,
+  default `/var/www/mrcoconetto`). Each push then installs the new theme on the server by itself.
+  The SSH user needs `sudo` rights for `wp`.
+
+## Build the theme yourself
+
+```bash
+# needs Node 18+ and Yarn 1  (npm i -g yarn)
+bash build-wp-theme.sh                       # → dist/mr-coconetto-wordpress-theme.zip
+THEME_VERSION=2.0.50 bash build-wp-theme.sh  # set the version number
+```
+
+Development: `cd frontend && yarn install && yarn start`. To talk to a local WordPress, set
+`REACT_APP_API_URL=http://localhost:8080/wp-json/mc/v1` (editing needs the theme's login, so it is
+easiest to test editing on the WordPress site itself).
+
+## How it works (for developers)
+
+* All default words and pictures are in `frontend/src/data/mock.js`. Editable sections and their
+  child-friendly names are listed in `frontend/src/data/cms.js` (`SECTIONS`). To make a new list
+  editable, export it from `mock.js`, add it to `SECTIONS` and to `mc_section_names()` in
+  `wordpress-theme/mr-coconetto/inc/content.php`.
+* Saved changes live in one WordPress option (`mc_site_content`: `texts`, `images`, `links`,
+  `theme`, `data`) and are printed into the page as `window.MC_CONFIG`, so the site shows them
+  without an extra request. History: `mc_site_content_history`.
+* REST API: `/wp-json/mc/v1/…` — public: `content`, `blog`, `blog/<slug>`, `orders`,
+  `enquiries`, `upload-logo`; editors (WordPress cookie + nonce): `admin/content`,
+  `admin/history`, `admin/upload`, `admin/media/<page>`, `admin/orders`, `admin/enquiries`,
+  `admin/blog`, `admin/stats`.
+* Who can edit: Administrators and Editors (`edit_others_pages`; change with the
+  `mc_edit_capability` filter).
+* Orders / enquiries are private post types `mc_order` / `mc_enquiry`; customer logos are stored in
+  `wp-content/uploads/mc-logos/`.

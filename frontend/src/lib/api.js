@@ -1,40 +1,33 @@
-// Central API configuration.
-// REACT_APP_BACKEND_URL is set in frontend/.env on the server (e.g. https://api.example.com).
-// If it is empty the app talks to the same origin (/api), which works when the
-// backend is reverse-proxied under the same domain.
-export const BACKEND_URL = (process.env.REACT_APP_BACKEND_URL || '').replace(/\/$/, '');
-export const API = `${BACKEND_URL}/api`;
+import axios from 'axios';
 
-// Demo / preview build: no backend, content + login are simulated in the browser.
-export const IS_DEMO = process.env.REACT_APP_DEMO === '1';
+// Everything comes from WordPress. The theme prints window.MC_CONFIG into the page.
+export const CONFIG = (typeof window !== 'undefined' && window.MC_CONFIG) || {};
+export const API = (CONFIG.api || process.env.REACT_APP_API_URL || '/wp-json/mc/v1').replace(/\/$/, '');
+export const EDIT_KEY = 'mc_live_edit';
 
-export const TOKEN_KEY = 'mc_admin_token';
-export const getToken = () => {
-  try { return localStorage.getItem(TOKEN_KEY); } catch { return null; }
-};
-export const setToken = (t) => { try { localStorage.setItem(TOKEN_KEY, t); } catch {} };
-export const clearToken = () => { try { localStorage.removeItem(TOKEN_KEY); } catch {} };
-export const authHeaders = () => {
-  const t = getToken();
-  return t ? { Authorization: `Bearer ${t}` } : {};
-};
+/** True when the visitor is logged in to WordPress as an editor. */
+export const canEdit = () => !!(CONFIG.canEdit && CONFIG.nonce);
 
-// Resolve an asset path. Content stores site-relative paths like
-// "/images/brand/hero-1.jpg"; in a build served from a sub-folder (PUBLIC_URL)
-// they are prefixed so they still resolve.
-const PUBLIC_URL = (process.env.PUBLIC_URL || '').replace(/\/$/, '');
-export const asset = (src) => {
-  if (!src) return '';
-  if (/^(https?:|data:|blob:)/i.test(src)) return src;
-  if (src.startsWith('/api/')) return `${BACKEND_URL}${src}`;
-  if (src.startsWith('/')) return `${PUBLIC_URL}${src}`;
-  return src;
+const editorHeaders = () => (CONFIG.nonce ? { 'X-WP-Nonce': CONFIG.nonce } : {});
+
+export const fileUrl = (url) => url;
+
+export const errorText = (err, fallback = 'Something went wrong. Please try again.') =>
+  err?.response?.data?.message || err?.response?.data?.detail || fallback;
+
+export const adminApi = {
+  get: (p) => axios.get(`${API}${p}`, { headers: editorHeaders() }).then((r) => r.data),
+  post: (p, body) => axios.post(`${API}${p}`, body, { headers: editorHeaders() }).then((r) => r.data),
+  put: (p, body) => axios.put(`${API}${p}`, body, { headers: editorHeaders() }).then((r) => r.data),
+  del: (p) => axios.delete(`${API}${p}`, { headers: editorHeaders() }).then((r) => r.data),
+  upload: async (file) => {
+    const fd = new FormData();
+    fd.append('file', file, file.name);
+    const data = await axios.post(`${API}/admin/upload`, fd, { headers: editorHeaders() }).then((r) => r.data);
+    return data.url;
+  },
 };
 
-// Build a WhatsApp deep link with an optional prefilled message.
-export const waLink = (phoneRaw, msg) =>
-  `https://wa.me/${phoneRaw}${msg ? `?text=${encodeURIComponent(msg)}` : ''}`;
-
-// Replace {placeholders} in content strings, e.g. "Now serving {city}".
-export const tpl = (str, vars = {}) =>
-  String(str ?? '').replace(/\{(\w+)\}/g, (m, k) => (vars[k] !== undefined ? vars[k] : m));
+export const goToLogin = () => {
+  window.location.href = CONFIG.loginUrl || '/wp-login.php?redirect_to=' + encodeURIComponent(window.location.href);
+};

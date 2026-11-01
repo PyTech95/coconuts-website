@@ -13,36 +13,8 @@ module.exports = {
         sm: 'calc(var(--radius) - 4px)'
       },
       colors: {
-        // Brand palette driven by CSS variables (editable from the admin Theme panel).
-        // Light tints (50/100) are ~50% darker than Tailwind defaults.
-        green: {
-          50: 'rgb(var(--c-green-50) / <alpha-value>)',
-          100: 'rgb(var(--c-green-100) / <alpha-value>)',
-          200: '#bbf7d0',
-          300: '#86efac',
-          400: '#4ade80',
-          500: 'rgb(var(--c-green-500) / <alpha-value>)',
-          600: 'rgb(var(--c-green-600) / <alpha-value>)',
-          700: 'rgb(var(--c-green-700) / <alpha-value>)',
-          800: '#166534',
-          900: '#14532d',
-          950: '#052e16',
-        },
-        pink: {
-          50: 'rgb(var(--c-pink-50) / <alpha-value>)',
-          100: 'rgb(var(--c-pink-100) / <alpha-value>)',
-          200: '#fbcfe8',
-          300: '#f9a8d4',
-          400: '#f472b6',
-          500: 'rgb(var(--c-pink-500) / <alpha-value>)',
-          600: 'rgb(var(--c-pink-600) / <alpha-value>)',
-          700: 'rgb(var(--c-pink-700) / <alpha-value>)',
-          800: '#9d174d',
-          900: '#831843',
-          950: '#500724',
-        },
-        beige: 'rgb(var(--c-beige) / <alpha-value>)',
-        dark: 'rgb(var(--c-dark) / <alpha-value>)',
+        green: {50: 'rgb(var(--green-50) / <alpha-value>)', 100: 'rgb(var(--green-100) / <alpha-value>)', 200: 'rgb(var(--green-200) / <alpha-value>)', 300: 'rgb(var(--green-300) / <alpha-value>)', 400: 'rgb(var(--green-400) / <alpha-value>)', 500: 'rgb(var(--green-500) / <alpha-value>)', 600: 'rgb(var(--green-600) / <alpha-value>)', 700: 'rgb(var(--green-700) / <alpha-value>)', 800: 'rgb(var(--green-800) / <alpha-value>)', 900: 'rgb(var(--green-900) / <alpha-value>)', 950: 'rgb(var(--green-950) / <alpha-value>)'},
+        pink: {50: 'rgb(var(--pink-50) / <alpha-value>)', 100: 'rgb(var(--pink-100) / <alpha-value>)', 200: 'rgb(var(--pink-200) / <alpha-value>)', 300: 'rgb(var(--pink-300) / <alpha-value>)', 400: 'rgb(var(--pink-400) / <alpha-value>)', 500: 'rgb(var(--pink-500) / <alpha-value>)', 600: 'rgb(var(--pink-600) / <alpha-value>)', 700: 'rgb(var(--pink-700) / <alpha-value>)', 800: 'rgb(var(--pink-800) / <alpha-value>)', 900: 'rgb(var(--pink-900) / <alpha-value>)', 950: 'rgb(var(--pink-950) / <alpha-value>)'},
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         card: {

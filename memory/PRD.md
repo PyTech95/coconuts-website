@@ -62,11 +62,3 @@ Hero → Customizer → About Us (+ founder) → EventTypes → Stats → Video 
 ## Ship / Deploy log
 - 2026-06: Ported full codebase into workspace `/app` (preserved protected .env). Backend health OK, `/api/orders` + `/api/enquiries` verified via curl. deployment_agent: **PASS** (fixed one unbounded `/api/status` query → added sort+limit 100). App is deployment-ready.
 - 2026-06 mobile polish pass (items 8–15): mobile header logo enlarged; "Request a Quote" confirmed green (pink kept as secondary accent); hero marquee/ticker made responsive with wider edge-fade + seamless loop; floating WhatsApp/Call buttons made smaller & repositioned; Cities list confirmed clean (no NCR/Goa); "Fresh & Hygienically Prepared" wording confirmed; Sangeet & Mehndi card description no longer clipped on mobile (stronger gradient + taller collage, removed line-clamp); mobile hero heading made more compact while keeping premium typography.
-
-- 2026-10 CMS batch (Pytech Digital):
-  - **Full CMS**: all content moved to `frontend/src/cms/defaultContent.js`; saved edits in MongoDB `site_content` via `GET/PUT /api/content` (30 revisions kept). Frontend merges saved content over defaults.
-  - **Live Editor** (`/?edit=1`, admin only): click-to-edit text (font/size/weight/colour/highlight/align/spacing), images & videos (upload / library / URL), section background colours, hide/show, add-remove-reorder lists (slides, services, plans, products, blog posts, FAQs, testimonials, cities…), undo/redo, Ctrl+S save.
-  - **Backend Editor** (`/admin`): schema-driven forms (`src/cms/schema.js`) for every section, Blog & Products CRUD with block editor, Media Library (`POST /api/admin/upload`, images ≤15 MB / videos ≤60 MB), Theme (brand colours, light tints, fonts), Orders & Enquiries inbox with CSV export.
-  - **Hero slider**: Ken-Burns image slides + short autoplay video clips (`public/videos/`), bottom-left text, right-side buttons, arrows/dots/progress, pause on hover, keyboard arrows.
-  - **Backgrounds**: light tints (pink-50/green-50/100, about beige) darkened ~50 % via CSS variables in `index.css` + Tailwind palette override.
-  - Local dev without MongoDB: `MONGO_URL=mock://` (mongomock-motor). Preview build: `scripts/build-preview.sh`.
