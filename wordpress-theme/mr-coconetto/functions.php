@@ -70,9 +70,15 @@ add_action('wp_enqueue_scripts', function () {
     }
 }, 100);
 
-// No emoji script / oEmbed noise on the React page.
+// No emoji script / oEmbed noise on the React page. WordPress' own canonical, shortlink and
+// prev/next tags describe WordPress URLs, not the app's pages (/cities/delhi, /blog/…), so they go too.
 remove_action('wp_head', 'print_emoji_detection_script', 7);
 remove_action('wp_print_styles', 'print_emoji_styles');
+remove_action('wp_head', 'rel_canonical');
+remove_action('wp_head', 'wp_shortlink_wp_head', 10);
+remove_action('wp_head', 'adjacent_posts_rel_link_wp_head', 10);
+remove_action('wp_head', 'wp_oembed_add_discovery_links');
+remove_action('template_redirect', 'wp_shortlink_header', 11);
 
 /** Everything the React app needs at start-up, printed into the page (no extra request). */
 function mc_frontend_config() {
@@ -128,9 +134,8 @@ add_action('template_redirect', function () {
 add_filter('pre_handle_404', function ($handled) {
     return is_admin() ? $handled : true;
 });
-add_filter('redirect_canonical', function ($redirect, $requested) {
-    return false;
-}, 10, 2);
+// The app's own URLs (/cities/delhi …) are not WordPress URLs, so WordPress must not "correct" them.
+remove_action('template_redirect', 'redirect_canonical');
 
 // Serve the app's root-relative media (/images/..., /videos/...) from the theme build.
 add_action('init', function () {
