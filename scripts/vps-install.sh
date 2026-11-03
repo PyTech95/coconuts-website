@@ -69,14 +69,24 @@ if ! command -v wp >/dev/null; then
   curl -fsSL -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
   chmod +x /usr/local/bin/wp
 fi
-WP() { sudo -u www-data -- wp --path="$WP_PATH" "$@"; }
+# Run WP-CLI as the web user from inside the site folder (running it from /root, which
+# www-data cannot open, makes WP-CLI's internal sub-commands fail).
+WP() { ( cd "$WP_PATH" && sudo -u www-data -- env HOME=/tmp WP_CLI_CACHE_DIR=/tmp/wp-cli-cache wp --path="$WP_PATH" "$@" ); }
 
 # ---------------------------------------------------------------- database
-if [ -f "$CRED_FILE" ] && grep -q '^DB_PASS=' "$CRED_FILE"; then
+if [ -f "$WP_PATH/wp-config.php" ]; then
+  # Re-run: keep the password WordPress already uses.
+  DB_PASS="$(php -r 'foreach (file($argv[1]) as $l) { if (preg_match("/define\\(\\s*[\\x22\\x27]DB_PASSWORD[\\x22\\x27]\\s*,\\s*[\\x22\\x27](.*)[\\x22\\x27]\\s*\\)/", $l, $m)) { echo stripslashes($m[1]); } }' "$WP_PATH/wp-config.php")"
+elif [ -f "$CRED_FILE" ] && grep -q '^DB_PASS=' "$CRED_FILE"; then
   DB_PASS="$(grep '^DB_PASS=' "$CRED_FILE" | cut -d= -f2-)"
-else
+fi
+if [ -z "${DB_PASS:-}" ]; then
   DB_PASS="$(openssl rand -hex 16)"
 fi
+# Save it straight away, so a failed run never loses it.
+touch "$CRED_FILE"; chmod 600 "$CRED_FILE"
+grep -v '^DB_PASS=' "$CRED_FILE" > "$CRED_FILE.tmp" || true
+echo "DB_PASS=$DB_PASS" >> "$CRED_FILE.tmp"; mv "$CRED_FILE.tmp" "$CRED_FILE"; chmod 600 "$CRED_FILE"
 say "Creating the database"
 mysql <<SQL
 CREATE DATABASE IF NOT EXISTS \`$DB_NAME\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -104,12 +114,22 @@ fi
 if ! WP core is-installed 2>/dev/null; then
   [ -n "$ADMIN_PASS" ] || ADMIN_PASS="$(openssl rand -base64 18 | tr -d '/+=' | cut -c1-16)"
   say "Installing WordPress"
+  echo "ADMIN_PASS=$ADMIN_PASS" >> "$CRED_FILE"
   WP core install --url="$SCHEME://$DOMAIN" --title="Mr. Coconetto" --admin_user="$ADMIN_USER" \
     --admin_password="$ADMIN_PASS" --admin_email="$ADMIN_EMAIL" --skip-email
-  WP option update timezone_string "Asia/Kolkata"
-  WP rewrite structure '/%postname%/'
   WP plugin delete hello akismet >/dev/null 2>&1 || true
+elif [ -n "$ADMIN_PASS" ]; then
+  say "Setting the WordPress password for $ADMIN_USER"
+  WP user update "$ADMIN_USER" --user_pass="$ADMIN_PASS" --skip-email
+elif ! grep -q '^ADMIN_PASS=' "$CRED_FILE" 2>/dev/null; then
+  # An earlier run stopped before the password was saved: give the admin a new one.
+  ADMIN_PASS="$(openssl rand -base64 18 | tr -d '/+=' | cut -c1-16)"
+  echo "ADMIN_PASS=$ADMIN_PASS" >> "$CRED_FILE"
+  say "Setting a new WordPress password for $ADMIN_USER"
+  WP user update "$ADMIN_USER" --user_pass="$ADMIN_PASS" --skip-email
 fi
+WP option update timezone_string "Asia/Kolkata" >/dev/null
+WP option update permalink_structure '/%postname%/' >/dev/null
 
 # ---------------------------------------------------------------- Nginx
 say "Configuring Nginx for $DOMAIN"
@@ -142,6 +162,17 @@ server {
 NGINX
 ln -sf /etc/nginx/sites-available/mrcoconetto /etc/nginx/sites-enabled/mrcoconetto
 rm -f /etc/nginx/sites-enabled/default
+# Turn off any older site for the same domain (e.g. the previous React + FastAPI setup),
+# otherwise Nginx may keep showing the old website. It is moved, not deleted.
+for f in /etc/nginx/sites-enabled/* /etc/nginx/conf.d/*.conf; do
+  [ -e "$f" ] || continue
+  [ "$(basename "$f")" = "mrcoconetto" ] && continue
+  if grep -Eq "server_name[^;]*[[:space:]]($DOMAIN|www\.$DOMAIN)([[:space:]]|;)" "$f"; then
+    mkdir -p /root/nginx-old-sites
+    mv "$f" "/root/nginx-old-sites/$(basename "$f").$(date +%s)"
+    echo "   Old Nginx site for $DOMAIN turned off: $f (copy kept in /root/nginx-old-sites)"
+  fi
+done
 nginx -t && systemctl reload nginx
 
 # ---------------------------------------------------------------- SSL
